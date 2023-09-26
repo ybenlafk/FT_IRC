@@ -1,34 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/26 13:48:52 by ybenlafk         ###   ########.fr       */
+/*   Created: 2023/09/26 13:46:24 by ybenlafk          #+#    #+#             */
+/*   Updated: 2023/09/26 13:47:31 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef YY
-# define YY
+#ifndef LO
+# define LO
 
 # include "headers.hpp"
-#include "defines.hpp"
-# include "utils.hpp"
+# include "defines.hpp"
 
-class Server
+class utils
 {
     public:
-        int         port;
-        std::string password;
-        vec_client  clients;
-        vec_pollfd  pollfds;
-        Server(int port, std::string password) : port(port), password(password) {}
-        ~Server() {}
-        void        run();
-        void        handleClients(int ServerSocket);
-        bool        AddClient(std::string pw, int i);
+        static std::string getCmd(std::string str, char c);
+        static std::string   strTrim(std::string str);
 };
-
 #endif
