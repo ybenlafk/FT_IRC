@@ -6,7 +6,7 @@
 #    By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/22 20:41:53 by ybenlafk          #+#    #+#              #
-#    Updated: 2023/09/26 13:48:39 by ybenlafk         ###   ########.fr        #
+#    Updated: 2023/09/27 15:36:40 by ybenlafk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ SRC=src/Server.cpp \
 	src/utils.cpp \
 	main.cpp
 OBJ= $(patsubst src/%.cpp,objs/%.o,$(SRC))
-CFLAGS= -Wall -Wextra -Werror -std=c++98 -stdlib=libc++
+CFLAGS= #-Wall -Wextra -Werror -std=c++98 
 
 all: $(NAME)
 
