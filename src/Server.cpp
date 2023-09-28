@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/28 14:22:07 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/09/29 00:35:41 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,45 @@ bool    isExist(vec_client clients, int fd)
         if (clients[i]->getFd() == fd)
             return (false);
     return (true);
+}
+
+void    NickHandler(vec_client clients, int fd, std::string nick)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() != fd && clients[i]->getAuth() == true)
+        {
+            if (clients[i]->getNickName() == nick)
+            {
+                std::string msg = "433 * " + nick + " :Nickname is already in use.\r\n";
+                send(fd, msg.c_str(), msg.length(), 0);
+                return ;
+            }
+        }
+    }
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() == fd)
+        {
+            clients[i]->setNickName(nick);
+            return ;
+        }
+    }
+}
+
+void    QuitHandler(vec_client clients, int fd, std::string msg)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() == fd)
+        {
+            std::string ms = "QUIT : " + msg + "\r\n";
+            send(fd, ms.c_str(), ms.length(), 0);
+            close(fd);
+            clients.erase(clients.begin() + i);
+            return ;
+        }
+    }
 }
 
 void Server::handleClients(int ServerSocket)
@@ -130,53 +169,38 @@ void Server::handleClients(int ServerSocket)
                             }
                             else if (clients[j]->getAuth() == true)
                             {
-                                std::string cmds[13] = {"PING" ,"NICK" ,"USER" ,"KILL" ,"QUIT" ,"PRIVMSG" ,"JOIN" ,"PART" ,"NAMES" ,"MODE" ,"SQUIT" ,"CONNECT" ,"OPER"};
+                                //["PING" ,"KILL" ,"PART" ,"NAMES" ,"SQUIT" ,"CONNECT" ,"OPER"]
+                                std::string cmds[8] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC","PRIVMSG"};
                                 std::string cmd = utils::strTrim(buffer, "\r\n\t ");
                                 cmd = utils::getCmd(buffer, ' ');
                                 size_t l = 0;
-                                while (l < cmds->size())
-                                    if (cmd == cmds[l++])
-                                        break;
+                                for (; l < 8; l++)
+                                    if (cmd == cmds[l]) break;
                                 switch (l)
                                 {
                                     case 0:
-                                        // PING handler
+                                        NickHandler(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
                                         break;
                                     case 1:
-                                        // NICK handler
-                                        break;
-                                    case 2:
-                                        // USER handler
-                                        break;
-                                    case 3:
-                                        // KILL handler
-                                        break;
-                                    case 4:
-                                        // QUIT handler
-                                        break;
-                                    case 5:
-                                        // PRIVMSG handler
-                                        break;
-                                    case 6:
                                         // JOIN handler
                                         break;
-                                    case 7:
-                                        // PART handler
-                                        break;
-                                    case 8:
-                                        // NAMES handler
-                                        break;
-                                    case 9:
+                                    case 2:
                                         // MODE handler
                                         break;
-                                    case 10:
-                                        // SQUIT handler
+                                    case 3:
+                                        QuitHandler(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
                                         break;
-                                    case 11:
-                                        // CONNECT handler
+                                    case 4:
+                                        // KICK handler
                                         break;
-                                    case 12:
-                                        // OPER handler
+                                    case 5:
+                                        // INVITE handler
+                                        break;
+                                    case 6:
+                                        // TOPIC handler
+                                        break;
+                                    case 7:
+                                        // PRIVMSG handler
                                         break;
                                 default:
                                     std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";
