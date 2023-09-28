@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/27 16:09:42 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/09/28 14:00:16 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,8 @@
 std::string utils::getCmd(std::string str, char c)
 {
     std::string cmd = "";
-    size_t pos = str.find(c);
-    if (pos != std::string::npos)
-        cmd = str.substr(0, pos);
+    int i = 0;
+    while (str[i] && str[i] != c) cmd += str[i++];
     return (cmd);
 }
 

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/27 16:58:54 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/09/28 14:22:07 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ int    Server::AddClient(std::string cmd, int i)
     pw = nick = user = "";
     tmp = utils::getCmd(cmd, ' ');
     
-    int j = 0;
+    size_t j = 0;
     for (j = 0; j < cmd.length(); j++) if (cmd[j] == ' ') break;
     for (; j < cmd.length(); j++) pw += cmd[j];
     pw = utils::strTrim(pw, "\r\n\t ");
-    
+    // std::cout << "tmp: " << tmp << " pw: " << pw << std::endl;
     if (tmp == "PASS")
     {
         for (vec_client::iterator it = clients.begin(); it != clients.end(); it++)
@@ -47,7 +47,7 @@ int    Server::AddClient(std::string cmd, int i)
     }
     else if (tmp == "USER")
         clients[i]->setUserName(pw);
-    if (clients[i]->getNickName() != "" && clients[i]->getUserName() != "")
+    if (clients[i]->getNickName() != "" && clients[i]->getUserName() != "" && clients[i]->getPw() == true)
         clients[i]->setAuth(true);
     return (0);
 }
@@ -100,7 +100,7 @@ void Server::handleClients(int ServerSocket)
                 {
                     if (isExist(this->clients, this->pollfds[i].fd))
                         clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false));
-                    for (int j = 0; j < clients.size(); j++)
+                    for (size_t j = 0; j < clients.size(); j++)
                     {
                         if (clients[j]->getFd() == this->pollfds[i].fd)
                         {
@@ -109,23 +109,80 @@ void Server::handleClients(int ServerSocket)
                                 int res = AddClient(buffer, j);
                                 if (res == 1)
                                 {
-                                    std::string msg = "NOTICE user :Wrong password.\r\n";
+                                    std::string msg = "464 :Password incorrect\r\n";
                                     send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
+                                    close(this->pollfds[i].fd);
+                                    this->pollfds.erase(this->pollfds.begin() + i);
                                 }
                                 else if (res == 2)
                                 {
-                                    std::string msg = "NOTICE user :Nickname is already in use.\r\n";
+                                    std::string msg = "433 * " + clients[j]->getNickName() + " :Nickname is already in use.\r\n";
                                     send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
+                                    close(this->pollfds[i].fd);
+                                    this->pollfds.erase(this->pollfds.begin() + i);
                                 }
                                 else if (res == 0 && clients[j]->getAuth() == true)
                                 {
-                                    std::string msg = "NOTICE user :Welcome to the Internet Relay Network " + clients[j]->getNickName() + "\r\n";
+                                    std::cout << "Client connected" << std::endl;
+                                    std::string msg = "001 " + clients[j]->getNickName() + " :Welcome to the Internet Relay Network " + clients[j]->getNickName() + "\r\n";
                                     send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
                                 }
                             }
                             else if (clients[j]->getAuth() == true)
                             {
-                                // dofus
+                                std::string cmds[13] = {"PING" ,"NICK" ,"USER" ,"KILL" ,"QUIT" ,"PRIVMSG" ,"JOIN" ,"PART" ,"NAMES" ,"MODE" ,"SQUIT" ,"CONNECT" ,"OPER"};
+                                std::string cmd = utils::strTrim(buffer, "\r\n\t ");
+                                cmd = utils::getCmd(buffer, ' ');
+                                size_t l = 0;
+                                while (l < cmds->size())
+                                    if (cmd == cmds[l++])
+                                        break;
+                                switch (l)
+                                {
+                                    case 0:
+                                        // PING handler
+                                        break;
+                                    case 1:
+                                        // NICK handler
+                                        break;
+                                    case 2:
+                                        // USER handler
+                                        break;
+                                    case 3:
+                                        // KILL handler
+                                        break;
+                                    case 4:
+                                        // QUIT handler
+                                        break;
+                                    case 5:
+                                        // PRIVMSG handler
+                                        break;
+                                    case 6:
+                                        // JOIN handler
+                                        break;
+                                    case 7:
+                                        // PART handler
+                                        break;
+                                    case 8:
+                                        // NAMES handler
+                                        break;
+                                    case 9:
+                                        // MODE handler
+                                        break;
+                                    case 10:
+                                        // SQUIT handler
+                                        break;
+                                    case 11:
+                                        // CONNECT handler
+                                        break;
+                                    case 12:
+                                        // OPER handler
+                                        break;
+                                default:
+                                    std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";
+                                    send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
+                                    break;
+                                }
                             }
                             break;
                         }
