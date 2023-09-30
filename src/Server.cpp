@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/29 00:35:41 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/09/29 17:26:03 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int    Server::AddClient(std::string cmd, int i)
     for (j = 0; j < cmd.length(); j++) if (cmd[j] == ' ') break;
     for (; j < cmd.length(); j++) pw += cmd[j];
     pw = utils::strTrim(pw, "\r\n\t ");
-    // std::cout << "tmp: " << tmp << " pw: " << pw << std::endl;
+
     if (tmp == "PASS")
     {
         for (vec_client::iterator it = clients.begin(); it != clients.end(); it++)
@@ -59,31 +59,6 @@ bool    isExist(vec_client clients, int fd)
             return (false);
     return (true);
 }
-
-void    NickHandler(vec_client clients, int fd, std::string nick)
-{
-    for (size_t i = 0; i < clients.size(); i++)
-    {
-        if (clients[i]->getFd() != fd && clients[i]->getAuth() == true)
-        {
-            if (clients[i]->getNickName() == nick)
-            {
-                std::string msg = "433 * " + nick + " :Nickname is already in use.\r\n";
-                send(fd, msg.c_str(), msg.length(), 0);
-                return ;
-            }
-        }
-    }
-    for (size_t i = 0; i < clients.size(); i++)
-    {
-        if (clients[i]->getFd() == fd)
-        {
-            clients[i]->setNickName(nick);
-            return ;
-        }
-    }
-}
-
 void    QuitHandler(vec_client clients, int fd, std::string msg)
 {
     for (size_t i = 0; i < clients.size(); i++)
@@ -179,7 +154,7 @@ void Server::handleClients(int ServerSocket)
                                 switch (l)
                                 {
                                     case 0:
-                                        NickHandler(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
+                                        Cmds::cmdNick(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
                                         break;
                                     case 1:
                                         // JOIN handler
@@ -188,7 +163,7 @@ void Server::handleClients(int ServerSocket)
                                         // MODE handler
                                         break;
                                     case 3:
-                                        QuitHandler(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
+                                        Cmds::cmdQuit(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
                                         break;
                                     case 4:
                                         // KICK handler
@@ -200,7 +175,7 @@ void Server::handleClients(int ServerSocket)
                                         // TOPIC handler
                                         break;
                                     case 7:
-                                        // PRIVMSG handler
+                                        Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
                                         break;
                                 default:
                                     std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";
@@ -219,28 +194,7 @@ void Server::handleClients(int ServerSocket)
 
 void    Server::run()
 {
-    int    ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-    this->clients.push_back(new Client(-1, "", "", "", false));
-    if (ServerSocket < 0)
-        throw std::runtime_error("socket() failed");
-
-    int optval = 1;
-    if (setsockopt(ServerSocket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
-        throw   std::runtime_error("setsockopt() failed");
-
-    struct sockaddr_in serverAddress;
-    memset(&serverAddress, 0, sizeof(serverAddress));
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-    serverAddress.sin_port = htons(port);
-
-    if (bind(ServerSocket, (struct sockaddr *)&serverAddress, sizeof(serverAddress)) < 0)
-        throw   std::runtime_error("bind() failed");
-
-    if (listen(ServerSocket, FD_SETSIZE) < 0)
-        throw std::runtime_error("listen() failed");
-    std::cout << "Listening on port " << port << std::endl;
-
+    int    ServerSocket = utils::setUpServer(&this->clients, this->port);
     struct pollfd pollfdServer;
     pollfdServer.fd = ServerSocket;
     pollfdServer.events = POLLIN;

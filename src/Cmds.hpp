@@ -1,35 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   Cmds.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/29 16:43:22 by ybenlafk         ###   ########.fr       */
+/*   Created: 2023/09/29 16:40:24 by ybenlafk          #+#    #+#             */
+/*   Updated: 2023/09/30 10:19:39 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef YY
-# define YY
-
+#ifndef CMDS
+# define CMDS
 # include "headers.hpp"
-#include "defines.hpp"
+# include "defines.hpp"
 # include "utils.hpp"
-# include "Cmds.hpp"
 
-class Server
+class Cmds
 {
     public:
-        int         port;
-        std::string password;
-        vec_client  clients;
-        vec_pollfd  pollfds;
-        Server(int port, std::string password) : port(port), password(password) {}
-        ~Server() {}
-        void        run();
-        void        handleClients(int ServerSocket);
-        int         AddClient(std::string pw, int i);
+        static  void    cmdNick(vec_client clients, int fd, std::string nick);
+        static  void    cmdQuit(vec_client clients, int fd, std::string msg);
+        static  void    cmdPrivmsg(vec_client clients, int fd, std::string value);
 };
 
 #endif

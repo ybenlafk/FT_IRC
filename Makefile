@@ -6,7 +6,7 @@
 #    By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/22 20:41:53 by ybenlafk          #+#    #+#              #
-#    Updated: 2023/09/28 13:56:42 by ybenlafk         ###   ########.fr        #
+#    Updated: 2023/09/29 16:44:22 by ybenlafk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ NAME= ircserv
 SRC=src/Server.cpp \
 	src/Client.cpp \
 	src/utils.cpp \
+	src/Cmds.cpp \
 	main.cpp
 OBJ= $(patsubst src/%.cpp,objs/%.o,$(SRC))
 CFLAGS= -Wall -Wextra -Werror -std=c++98 
