@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/29 17:26:03 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/03 16:18:45 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ bool    isExist(vec_client clients, int fd)
             return (false);
     return (true);
 }
+
 void    QuitHandler(vec_client clients, int fd, std::string msg)
 {
     for (size_t i = 0; i < clients.size(); i++)
@@ -113,7 +114,7 @@ void Server::handleClients(int ServerSocket)
                 if (bytesRead > 0)
                 {
                     if (isExist(this->clients, this->pollfds[i].fd))
-                        clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false));
+                        clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false, false));
                     for (size_t j = 0; j < clients.size(); j++)
                     {
                         if (clients[j]->getFd() == this->pollfds[i].fd)
@@ -148,22 +149,24 @@ void Server::handleClients(int ServerSocket)
                                 std::string cmds[8] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC","PRIVMSG"};
                                 std::string cmd = utils::strTrim(buffer, "\r\n\t ");
                                 cmd = utils::getCmd(buffer, ' ');
+                                std::string value = utils::getValue(buffer, ' ');
+                                value = utils::strTrim(value, "\r\n\t ");
                                 size_t l = 0;
                                 for (; l < 8; l++)
                                     if (cmd == cmds[l]) break;
                                 switch (l)
                                 {
                                     case 0:
-                                        Cmds::cmdNick(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
+                                        Cmds::cmdNick(clients, this->pollfds[i].fd, value);
                                         break;
                                     case 1:
-                                        // JOIN handler
+                                        Cmds::cmdJoin(this->channels, clients, this->pollfds[i].fd, value);
                                         break;
                                     case 2:
                                         // MODE handler
                                         break;
                                     case 3:
-                                        Cmds::cmdQuit(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
+                                        Cmds::cmdQuit(clients, this->pollfds[i].fd, value);
                                         break;
                                     case 4:
                                         // KICK handler
@@ -175,7 +178,7 @@ void Server::handleClients(int ServerSocket)
                                         // TOPIC handler
                                         break;
                                     case 7:
-                                        Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, utils::getValue(buffer, ' '));
+                                        Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value);
                                         break;
                                 default:
                                     std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";

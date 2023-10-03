@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/29 16:43:22 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/03 11:46:28 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 #include "defines.hpp"
 # include "utils.hpp"
 # include "Cmds.hpp"
+# include "Channel.hpp"
+
+typedef std::map<std::string, Channel*> map_channel;
 
 class Server
 {
@@ -24,6 +27,7 @@ class Server
         int         port;
         std::string password;
         vec_client  clients;
+        map_channel channels;
         vec_pollfd  pollfds;
         Server(int port, std::string password) : port(port), password(password) {}
         ~Server() {}

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:42:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/30 10:33:26 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/03 21:24:05 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,5 +96,99 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value)
         }
         std::string ms = "401 * " + target + " :No such nick/channel\r\n";
         send(fd, ms.c_str(), ms.length(), 0);
+    }
+}
+
+int          parseJoin(std::string value, map_channel &channels, Client *client)
+{
+    vec_str  names;
+    vec_str  keys;
+
+    utils::split(value, ',', &names, &keys);
+    for (size_t i = 0; i < names.size(); i++)
+    {
+        if (channels.find(names[i]) == channels.end())
+        {
+            if (keys.size() > i)
+            {
+                channels[names[i]] = new Channel(names[i], keys[i]);
+                client->add_channel(channels[names[i]]);
+                client->setAdmin(true);
+                channels[names[i]]->add_client(client);
+                channels[names[i]]->set_pw(true);
+            }
+            else
+            {
+                channels[names[i]] = new Channel(names[i], "");
+                client->add_channel(channels[names[i]]);
+                client->setAdmin(true);
+                channels[names[i]]->add_client(client);
+                channels[names[i]]->set_pw(false);
+            }
+        }
+        else
+        {
+            if (channels[names[i]]->get_pw())
+            {
+                if (keys.size() > i)
+                {
+                    if (channels[names[i]]->get_key() == keys[i])
+                    {
+                        client->add_channel(channels[names[i]]);
+                        if (isExist(channels[names[i]]->get_clients(), client->getFd()))
+                            channels[names[i]]->add_client(client);
+                    }
+                    else
+                    {
+                        // wrong key
+                        std::string ms = "475 * " + names[i] + " :Cannot join channel (+k)\r\n";
+                        send(client->getFd(), ms.c_str(), ms.length(), 0);
+                    }
+                }
+                else
+                {
+                    // key needed
+                    std::string ms = "475 * " + names[i] + " :Cannot join channel (+k)\r\n";
+                    send(client->getFd(), ms.c_str(), ms.length(), 0);
+                }
+            }
+            else
+            {
+                client->add_channel(channels[names[i]]);
+                if (isExist(channels[names[i]]->get_clients(), client->getFd()))
+                    channels[names[i]]->add_client(client);
+            }
+        }
+    }
+    return (0);
+}
+
+void    Cmds::cmdJoin(map_channel &channels, vec_client clients, int fd, std::string value)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() == fd)
+        {
+            if (clients[i]->getAuth())
+            {
+                parseJoin(value, channels, clients[i]);
+                for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
+                {
+                    std::cout << "name : " << it->first << std::endl;
+                    std::cout << "key : " << it->second->get_key() << std::endl;
+                    std::cout << "pw : " << (it->second->get_pw() ? "(true)" : "(false)") << std::endl;
+                    std::cout << "[" ;
+                    for (size_t j = 0; j < it->second->get_clients().size(); j++)
+                    {
+                        std::cout << it->second->get_clients()[j]->getNickName() << " ";
+                        if (it->second->get_clients()[j]->getAdmin())
+                            std::cout << "(admin)";
+                        std::cout << "| ";
+                    }
+                    std::cout << "]" << std::endl;
+                    std::cout << "---------------------------------------------" << std::endl;
+                }
+            }
+        }
     }
 }

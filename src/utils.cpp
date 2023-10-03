@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/09/29 16:39:15 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/03 13:51:32 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void         utils::spaceSkipe(std::string &str)
 int     utils::setUpServer(vec_client *clients, int port)
 {
     int    ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-    clients->push_back(new Client(-1, "", "", "", false));
+    clients->push_back(new Client(-1, "", "", "", false, false));
     if (ServerSocket < 0)
         throw std::runtime_error("socket() failed");
 
@@ -75,4 +75,40 @@ int     utils::setUpServer(vec_client *clients, int port)
         throw std::runtime_error("listen() failed");
     std::cout << "Listening on port " << port << std::endl;
     return (ServerSocket);
+}
+
+void    utils::split(std::string str, char c, vec_str *names, vec_str *keys)
+{
+    size_t i = 0;
+    std::string word;
+
+    while (str[i] && str[i] != ' ' && str[i] != '\t')
+    {
+        if (str[i] == c)
+        {
+            names->push_back(word);
+            word = "";
+        }
+        else
+            word += str[i];
+        i++;
+    }
+    if (!word.empty())
+        names->push_back(word);
+    word = "";
+    while (str[i] && (str[i] == ' ' || str[i] == '\t')) i++;
+    
+    while (str[i] && str[i] != ' ' && str[i] != '\t')
+    {
+        if (str[i] == c)
+        {
+            keys->push_back(word);
+            word = "";
+        }
+        else
+            word += str[i];
+        i++;
+    }
+    if (!word.empty())
+        keys->push_back(word);
 }
