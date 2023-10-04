@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:42:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 14:10:01 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 17:38:35 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,10 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
             Channel *chan = channels[target];
             for (size_t i = 0; i < chan->get_clients().size(); i++)
             {
-                if (chan->get_clients()[i]->getFd() != fd && isJoined(*chan->get_clients()[i], target))
+                if (chan->get_clients()[i].getFd() != fd && isJoined(chan->get_clients()[i], target))
                 {
                     msg = utils::strTrim(msg, "\r\n\t ");
-                    utils::ft_send(chan->get_clients()[i]->getFd(), "PRIVMSG " + target + " :" + msg + "\r\n");
+                    utils::ft_send(chan->get_clients()[i].getFd(), "PRIVMSG " + target + " :" + msg + "\r\n");
                 }
             }
         }
@@ -119,6 +119,14 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
     }
 }
 
+bool    isClientExist(vec_member clients, int fd)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+        if (clients[i].getFd() == fd)
+            return (false);
+    return (true);
+}
+
 int          parseJoin(std::string value, map_channel &channels, Client *client)
 {
     vec_str  names;
@@ -138,15 +146,17 @@ int          parseJoin(std::string value, map_channel &channels, Client *client)
             {
                 channels[names[i]] = new Channel(names[i], keys[i]);
                 client->add_channel(names[i], true);
-                channels[names[i]]->add_client(client);
+                channels[names[i]]->add_client(*client);
                 channels[names[i]]->set_pw(true);
+                utils::ft_send(client->getFd(), "JOIN " + names[i] + "\r\n");
             }
             else
             {
                 channels[names[i]] = new Channel(names[i], "");
                 client->add_channel(names[i], true);
-                channels[names[i]]->add_client(client);
+                channels[names[i]]->add_client(*client);
                 channels[names[i]]->set_pw(false);
+                utils::ft_send(client->getFd(), "JOIN " + names[i] + "\r\n");
             }
         }
         else
@@ -158,8 +168,9 @@ int          parseJoin(std::string value, map_channel &channels, Client *client)
                     if (channels[names[i]]->get_key() == keys[i])
                     {
                         client->add_channel(names[i], false);
-                        if (isExist(channels[names[i]]->get_clients(), client->getFd()))
-                            channels[names[i]]->add_client(client);
+                        if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
+                            channels[names[i]]->add_client(*client);
+                        utils::ft_send(client->getFd(), "JOIN " + names[i] + "\r\n");
                     }
                     else
                         utils::ft_send(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n");
@@ -170,8 +181,9 @@ int          parseJoin(std::string value, map_channel &channels, Client *client)
             else
             {
                 client->add_channel(names[i], false);
-                if (isExist(channels[names[i]]->get_clients(), client->getFd()))
-                    channels[names[i]]->add_client(client);
+                if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
+                    channels[names[i]]->add_client(*client);
+                utils::ft_send(client->getFd(), "JOIN " + names[i] + "\r\n");
             }
         }
     }
@@ -195,14 +207,79 @@ void    Cmds::cmdJoin(map_channel &channels, vec_client clients, int fd, std::st
                     std::cout << "[" ;
                     for (size_t j = 0; j < it->second->get_clients().size(); j++)
                     {
-                        std::cout << it->second->get_clients()[j]->getNickName() << " ";
-                        if (it->second->get_clients()[j]->getChannels().find(it->first) != it->second->get_clients()[j]->getChannels().end())
-                            if (it->second->get_clients()[j]->getChannels().find(it->first)->second)
+                        std::cout << it->second->get_clients()[j].getNickName() << " ";
+                        if (it->second->get_clients()[j].getChannels().find(it->first) != it->second->get_clients()[j].getChannels().end())
+                            if (it->second->get_clients()[j].getChannels().find(it->first)->second)
                                 std::cout << "(admin) ";
                         std::cout << "| ";
                     }
                     std::cout << "]" << std::endl;
                     std::cout << "---------------------------------------------" << std::endl;
+                }
+            }
+        }
+    }
+}
+
+
+void    removeFromChannel(map_channel &channels, int fd)
+{
+    for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
+        for (size_t j = 0; j < it->second->get_clients().size(); j++)
+            if (it->second->get_clients()[j].getFd() == fd)
+                it->second->get_clients().erase(it->second->get_clients().begin() + j);
+}
+
+void    Cmds::cmdPart(map_channel &channels, vec_client clients, int fd, std::string value)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() == fd)
+        {
+            if (clients[i]->getAuth())
+            {
+                std::string reason = "";
+                vec_str names;
+                if (utils::split(value, ',', &names, &reason) == 0)
+                {
+                    utils::ft_send(fd, "461 * PART :Not enough parameters\r\n");
+                    return ;
+                }
+                for (size_t j = 0; j < names.size(); j++)
+                {
+                    if (channels.find(names[j]) != channels.end())
+                    {
+                        if (isJoined(*clients[i], names[j]))
+                        {
+                            if (reason.empty())
+                                utils::ft_send(fd, "PART " + names[j] + "\r\n");
+                            else
+                                utils::ft_send(fd, "PART " + names[j] + " :" + reason + "\r\n");
+                            clients[i]->getChannels().erase(names[j]);
+                            removeFromChannel(channels, fd);
+                            for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
+                            {
+                                std::cout << "name : " << it->first << std::endl;
+                                std::cout << "key : " << it->second->get_key() << std::endl;
+                                std::cout << "pw : " << (it->second->get_pw() ? "(true)" : "(false)") << std::endl;
+                                std::cout << "[" ;
+                                for (size_t j = 0; j < it->second->get_clients().size(); j++)
+                                {
+                                    std::cout << it->second->get_clients()[j].getNickName() << " ";
+                                    if (it->second->get_clients()[j].getChannels().find(it->first) != it->second->get_clients()[j].getChannels().end())
+                                        if (it->second->get_clients()[j].getChannels().find(it->first)->second)
+                                            std::cout << "(admin) ";
+                                    std::cout << "| ";
+                                }
+                                std::cout << "]" << std::endl;
+                                std::cout << "---------------------------------------------" << std::endl;
+                            }
+                        }
+                        else
+                            utils::ft_send(fd, "442 * " + names[j] + " :You're not on that channel\r\n");
+                    }
+                    else
+                        utils::ft_send(fd, "403 * " + names[j] + " :No such channel\r\n");
                 }
             }
         }

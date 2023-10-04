@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 13:50:19 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 17:06:49 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ void    utils::split(std::string str, char c, vec_str *names, vec_str *keys)
     word = "";
     while (str[i] && (str[i] == ' ' || str[i] == '\t')) i++;
     
-    while (str[i] && str[i] != ' ' && str[i] != '\t')
+    while (str[i] && str[i] != '\r' && str[i] != '\n')
     {
         if (str[i] == c)
         {
@@ -125,4 +125,46 @@ bool         utils::isValidName(std::string name)
         if (!isalnum(name[i]) && name[i] != '_')
             return (false);
     return (true);
+}
+
+std::string utils::getHostName()
+{
+    char hostName[1024];
+    if (gethostname(hostName, 1024) != 0)
+        throw std::runtime_error("gethostname() failed");
+    return (hostName);
+}
+
+int    utils::split(std::string str, char c, vec_str *names, std::string *reason)
+{
+    size_t i = 0;
+    std::string word;
+
+    while (str[i] && str[i] != ' ' && str[i] != '\t' && str[i] != ':')
+    {
+        if (str[i] == c)
+        {
+            names->push_back(word);
+            word = "";
+        }
+        else
+            word += str[i];
+        i++;
+    }
+    if (!word.empty())
+        names->push_back(word);
+    else
+        return (0);
+    word = "";
+    while (str[i] && (str[i] == ' ' || str[i] == '\t')) i++;
+    if (str[i]  != ':')
+        return (0);
+    i++;
+    while (str[i] && str[i] != '\r' && str[i] != '\n')
+    {
+        word += str[i];
+        i++;
+    }
+    *reason = word;
+    return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 21:53:13 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 17:31:59 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 
 class Client;
 
-typedef std::vector<Client*> vec_client;
+typedef std::vector<Client> vec_member;
 
 class Channel
 {
     private:
         std::string name;
-        vec_client clients;
+        vec_member clients;
         std::string topic;
         std::string mode;
         std::string key;
@@ -37,7 +37,7 @@ class Channel
         Channel(std::string name, std::string key) : name(name), key(key) {}
         ~Channel(){}
         
-        void        add_client(Client *client);
+        void        add_client(Client client);
         
         void        set_name(std::string name);
         void        set_topic(std::string topic);
@@ -48,7 +48,7 @@ class Channel
         void        set_topic_changeable(bool topic_changeable);
         void        set_limit(int limit);
         
-        vec_client  get_clients() const;
+        vec_member  get_clients() const;
         std::string get_name() const;
         std::string get_topic() const;
         std::string get_mode() const;

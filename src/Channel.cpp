@@ -6,13 +6,13 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:22 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 15:18:19 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 17:34:40 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-void        Channel::add_client(Client *client) {this->clients.push_back(new Client(*client));}
+void        Channel::add_client(Client client) {this->clients.push_back(Client(client));}
 
 void        Channel::set_name(std::string name) {this->name = name;}
 
@@ -30,7 +30,7 @@ void        Channel::set_topic_changeable(bool topic_changeable) {this->topic_ch
 
 void        Channel::set_limit(int limit) {this->limit = limit;}
 
-vec_client  Channel::get_clients() const {return this->clients;}
+vec_member  Channel::get_clients() const {return this->clients;}
 
 std::string Channel::get_name() const {return this->name;}
 

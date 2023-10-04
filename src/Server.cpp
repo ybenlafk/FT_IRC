@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 13:56:41 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 17:35:39 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void Server::handleClients(int ServerSocket)
                             else if (clients[j]->getAuth() == true)
                             {
                                 //["PING" ,"KILL" ,"PART" ,"NAMES" ,"SQUIT" ,"CONNECT" ,"OPER"]
-                                std::string cmds[8] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC","PRIVMSG"};
+                                std::string cmds[9] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART"};
                                 std::string cmd = utils::strTrim(buffer, "\r\n\t ");
                                 cmd = utils::getCmd(buffer, ' ');
                                 std::string value = utils::getValue(buffer, ' ');
@@ -180,6 +180,9 @@ void Server::handleClients(int ServerSocket)
                                     case 7:
                                         Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels);
                                         break;
+                                    case 8:
+                                        Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value);
+                                        break;
                                 default:
                                     std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";
                                     send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
@@ -203,7 +206,6 @@ void    Server::run()
     pollfdServer.events = POLLIN;
     pollfdServer.revents = 0;
     this->pollfds.push_back(pollfdServer);
-    
     while (true)
     {
         int pl = poll(this->pollfds.data(), this->pollfds.size(), 0);
