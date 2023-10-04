@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:46:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 12:11:29 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 14:08:11 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,7 @@ class utils
         static void         spaceSkipe(std::string &str);
         static int          setUpServer(vec_client *clients, int port);
         static void         split(std::string str, char c, vec_str *names, vec_str *keys);
+        static void         ft_send(int fd, std::string msg);
+        static bool         isValidName(std::string name);
 };
 #endif

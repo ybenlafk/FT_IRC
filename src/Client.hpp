@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:26:59 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 13:26:24 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 13:55:54 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,8 @@
 # define OO
 
 #include "headers.hpp"
-#include "Channel.hpp"
 
-class Channel;
-
-typedef std::vector<Channel*> vec_channel;
+typedef std::map<std::string, bool> m_channel;
 
 class Client
 {
@@ -27,7 +24,7 @@ class Client
         std::string     nick_name;
         std::string     user_name;
         std::string     real_name;
-        vec_channel     channels;
+        m_channel     channels;
         bool            pw;
         bool            auth;
         bool            admin;
@@ -37,7 +34,8 @@ class Client
         ~Client();
         Client(int fd, std::string nick_name, std::string user_name, std::string real_name, bool auth, bool admin);
 
-        void            add_channel(Channel *channel);
+        void            add_channel(std::string &name, bool admin);
+        m_channel     getChannels() const;
 
         void            setFd(int fd);
         void            setPw(bool pw);

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 13:51:32 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 13:50:19 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,4 +111,18 @@ void    utils::split(std::string str, char c, vec_str *names, vec_str *keys)
     }
     if (!word.empty())
         keys->push_back(word);
+}
+
+void        utils::ft_send(int fd, std::string msg) {send(fd, msg.c_str(), msg.length(), 0);}
+
+bool         utils::isValidName(std::string name)
+{
+    if (name[0] != '#')
+        return (false);
+    if (name.length() < 2)
+        return (false);
+    for (size_t i = 1; i < name.length(); i++)
+        if (!isalnum(name[i]) && name[i] != '_')
+            return (false);
+    return (true);
 }

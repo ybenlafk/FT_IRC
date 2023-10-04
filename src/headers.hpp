@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:45:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 15:58:46 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 12:05:03 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,12 @@
 #include <ctime>
 #include <arpa/inet.h>
 #include <fstream>
+
+typedef struct node
+{
+    std::string     name;
+    bool            admin;
+    node(std::string name, bool admin) : name(name), admin(admin) {}
+}               t_channel;
 
 #endif

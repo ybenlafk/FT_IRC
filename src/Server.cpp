@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/03 16:18:45 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 13:56:41 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ void Server::handleClients(int ServerSocket)
                                         // TOPIC handler
                                         break;
                                     case 7:
-                                        Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value);
+                                        Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels);
                                         break;
                                 default:
                                     std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";
