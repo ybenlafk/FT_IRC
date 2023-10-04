@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:26:59 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 13:55:54 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 21:10:41 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class Client
         Client(int fd, std::string nick_name, std::string user_name, std::string real_name, bool auth, bool admin);
 
         void            add_channel(std::string &name, bool admin);
-        m_channel     getChannels() const;
+        m_channel       &getChannels();
 
         void            setFd(int fd);
         void            setPw(bool pw);

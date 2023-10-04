@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:22 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 17:34:40 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 21:08:23 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void        Channel::set_topic_changeable(bool topic_changeable) {this->topic_ch
 
 void        Channel::set_limit(int limit) {this->limit = limit;}
 
-vec_member  Channel::get_clients() const {return this->clients;}
+vec_member  &Channel::get_clients() {return this->clients;}
 
 std::string Channel::get_name() const {return this->name;}
 

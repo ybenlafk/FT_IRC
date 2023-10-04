@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:42:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 17:38:35 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 21:17:11 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
             Channel *chan = channels[target];
             for (size_t i = 0; i < chan->get_clients().size(); i++)
             {
+                // Client *client = chan->get_clients()[i];
                 if (chan->get_clients()[i].getFd() != fd && isJoined(chan->get_clients()[i], target))
                 {
                     msg = utils::strTrim(msg, "\r\n\t ");
@@ -222,16 +223,17 @@ void    Cmds::cmdJoin(map_channel &channels, vec_client clients, int fd, std::st
 }
 
 
-void    removeFromChannel(map_channel &channels, int fd)
+void    removeFromChannel(map_channel &channels, int fd, std::string name)
 {
     for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
         for (size_t j = 0; j < it->second->get_clients().size(); j++)
-            if (it->second->get_clients()[j].getFd() == fd)
+            if (it->second->get_clients()[j].getFd() == fd && it->first == name)
                 it->second->get_clients().erase(it->second->get_clients().begin() + j);
 }
 
 void    Cmds::cmdPart(map_channel &channels, vec_client clients, int fd, std::string value)
 {
+    (void)channels;
     for (size_t i = 0; i < clients.size(); i++)
     {
         if (clients[i]->getFd() == fd)
@@ -255,8 +257,9 @@ void    Cmds::cmdPart(map_channel &channels, vec_client clients, int fd, std::st
                                 utils::ft_send(fd, "PART " + names[j] + "\r\n");
                             else
                                 utils::ft_send(fd, "PART " + names[j] + " :" + reason + "\r\n");
+                            m_channel::iterator it;
                             clients[i]->getChannels().erase(names[j]);
-                            removeFromChannel(channels, fd);
+                            removeFromChannel(channels, fd, names[j]);
                             for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
                             {
                                 std::cout << "name : " << it->first << std::endl;

@@ -6,7 +6,7 @@
 #    By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/22 20:41:53 by ybenlafk          #+#    #+#              #
-#    Updated: 2023/10/03 11:10:11 by ybenlafk         ###   ########.fr        #
+#    Updated: 2023/10/04 19:59:33 by ybenlafk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRC=src/Server.cpp \
 	src/Channel.cpp \
 	main.cpp
 OBJ= $(patsubst src/%.cpp,objs/%.o,$(SRC))
-CFLAGS= -Wall -Wextra -Werror -std=c++98 
+CFLAGS= -Wall -Wextra -Werror -std=c++98  #-fsanitize=address -g3
 
 all: $(NAME)
 

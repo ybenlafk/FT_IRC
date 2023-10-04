@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 13:55:59 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/04 21:11:33 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ Client::Client(int fd, std::string nick_name, std::string user_name, std::string
 
 void           Client::add_channel(std::string &name, bool admin) {this->channels[name] = admin;}
 
-m_channel    Client::getChannels() const {return (this->channels);}
+m_channel      &Client::getChannels() {return (this->channels);}
 
 void           Client::setAuth(bool auth) {this->auth = auth;}
 
