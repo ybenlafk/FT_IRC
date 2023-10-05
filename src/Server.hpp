@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 16:09:26 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/05 14:52:05 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Server
         ~Server() {}
         void        run();
         void        handleClients(int ServerSocket);
-        int         AddClient(std::string pw, int i);
+        int         AddClient(std::string pw, Client *client, int fd);
 };
 
 #endif

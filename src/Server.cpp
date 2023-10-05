@@ -6,14 +6,14 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 17:35:39 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/05 16:52:46 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Server.hpp"
 
 
-int    Server::AddClient(std::string cmd, int i)
+int    Server::AddClient(std::string cmd, Client *client, int fd)
 {
     std::string pw, nick, user, tmp;
     pw = nick = user = "";
@@ -26,14 +26,14 @@ int    Server::AddClient(std::string cmd, int i)
 
     if (tmp == "PASS")
     {
-        for (vec_client::iterator it = clients.begin(); it != clients.end(); it++)
+        for (vec_client::iterator tt = clients.begin(); tt != clients.end(); tt++)
         {
-            if ((*it)->getFd() == this->pollfds[i].fd)
+            if ((*tt)->getFd() == fd)
             {
-                if ((*it)->getPw() == false)
+                if ((*tt)->getPw() == false)
                 {
-                    if (pw != password) return (1); 
-                    else (*it)->setPw(true);
+                    if (pw != password) return (1);
+                    else (*tt)->setPw(true);
                 }
             }
         }
@@ -41,14 +41,14 @@ int    Server::AddClient(std::string cmd, int i)
     else if (tmp == "NICK")
     {
         for (vec_client::iterator it = clients.begin(); it != clients.end(); it++)
-            if (pw == (*it)->getNickName() && (*it)->getFd() != this->pollfds[i].fd)
+            if (pw == (*it)->getNickName() && (*it)->getFd() != fd)
                 return (2);
-        clients[i]->setNickName(pw);
+        client->setNickName(pw);
     }
     else if (tmp == "USER")
-        clients[i]->setUserName(pw);
-    if (clients[i]->getNickName() != "" && clients[i]->getUserName() != "" && clients[i]->getPw() == true)
-        clients[i]->setAuth(true);
+        client->setUserName(pw);
+    if (client->getNickName() != "" && client->getUserName() != "" && client->getPw() == true)
+        client->setAuth(true);
     return (0);
 }
 
@@ -58,21 +58,6 @@ bool    isExist(vec_client clients, int fd)
         if (clients[i]->getFd() == fd)
             return (false);
     return (true);
-}
-
-void    QuitHandler(vec_client clients, int fd, std::string msg)
-{
-    for (size_t i = 0; i < clients.size(); i++)
-    {
-        if (clients[i]->getFd() == fd)
-        {
-            std::string ms = "QUIT : " + msg + "\r\n";
-            send(fd, ms.c_str(), ms.length(), 0);
-            close(fd);
-            clients.erase(clients.begin() + i);
-            return ;
-        }
-    }
 }
 
 void Server::handleClients(int ServerSocket)
@@ -106,53 +91,42 @@ void Server::handleClients(int ServerSocket)
                 }
                 else if (bytesRead == 0)
                 {
-                    std::cout << "Client disconnected" << std::endl;
-                    close(this->pollfds[i].fd);
-                    this->pollfds.erase(this->pollfds.begin() + i);
+                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected");
                     break;
                 }
                 if (bytesRead > 0)
                 {
                     if (isExist(this->clients, this->pollfds[i].fd))
                         clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false, false));
-                    for (size_t j = 0; j < clients.size(); j++)
+                    vec_client::iterator it = clients.begin();
+                    for (; it != clients.end(); it++)
                     {
-                        if (clients[j]->getFd() == this->pollfds[i].fd)
+                        // std::cout << "nick: " << (*it)->getNickName() << ((*it)->getAuth() ? "(true)" : "(false)") << std::endl;
+                        if ((*it)->getFd() == this->pollfds[i].fd)
                         {
-                            if (clients[j]->getAuth() == false)
+                            if ((*it)->getAuth() == false)
                             {
-                                int res = AddClient(buffer, j);
+                                int res = AddClient(buffer, *it, this->pollfds[i].fd);
                                 if (res == 1)
-                                {
-                                    std::string msg = "464 :Password incorrect\r\n";
-                                    send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
-                                    close(this->pollfds[i].fd);
-                                    this->pollfds.erase(this->pollfds.begin() + i);
-                                }
+                                    utils::ft_send(this->pollfds[i].fd, "464 * :Password incorrect\r\n");
                                 else if (res == 2)
-                                {
-                                    std::string msg = "433 * " + clients[j]->getNickName() + " :Nickname is already in use.\r\n";
-                                    send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
-                                    close(this->pollfds[i].fd);
-                                    this->pollfds.erase(this->pollfds.begin() + i);
-                                }
-                                else if (res == 0 && clients[j]->getAuth() == true)
+                                    utils::ft_send(this->pollfds[i].fd, "433 * :Nickname is already in use\r\n");
+                                else if (res == 0 && (*it)->getAuth() == true)
                                 {
                                     std::cout << "Client connected" << std::endl;
-                                    std::string msg = "001 " + clients[j]->getNickName() + " :Welcome to the Internet Relay Network " + clients[j]->getNickName() + "\r\n";
-                                    send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
+                                    utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to the Internet Relay Network\r\n", (*it)->getPrifex());
                                 }
                             }
-                            else if (clients[j]->getAuth() == true)
+                            else if ((*it)->getAuth() == true)
                             {
-                                //["PING" ,"KILL" ,"PART" ,"NAMES" ,"SQUIT" ,"CONNECT" ,"OPER"]
+                                // std::cout << "buffer: " << buffer << std::endl;
                                 std::string cmds[9] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART"};
                                 std::string cmd = utils::strTrim(buffer, "\r\n\t ");
                                 cmd = utils::getCmd(buffer, ' ');
                                 std::string value = utils::getValue(buffer, ' ');
                                 value = utils::strTrim(value, "\r\n\t ");
                                 size_t l = 0;
-                                for (; l < 8; l++)
+                                for (; l < 9; l++)
                                     if (cmd == cmds[l]) break;
                                 switch (l)
                                 {
@@ -184,11 +158,12 @@ void Server::handleClients(int ServerSocket)
                                         Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value);
                                         break;
                                 default:
-                                    std::string msg = "421 " + clients[j]->getNickName() + " :Unknown command\r\n";
+                                    std::string msg = "421 " + (*it)->getNickName() + " :Unknown command\r\n";
                                     send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
                                     break;
                                 }
                             }
+                            
                             break;
                         }
                     }

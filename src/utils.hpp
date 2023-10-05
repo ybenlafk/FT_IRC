@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:46:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 17:02:54 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/05 13:45:12 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@ class utils
         static void         ft_send(int fd, std::string msg);
         static bool         isValidName(std::string name);
         static std::string  getHostName();
+        static void         reply(int fd, std::string msg, std::string prefix);
 };
 #endif

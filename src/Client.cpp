@@ -6,11 +6,12 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 21:11:33 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/05 16:30:30 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
+#include "utils.hpp"
 
 Client::Client() {}
 
@@ -64,3 +65,8 @@ std::string    Client::getUserName() const {return (this->user_name);}
 std::string    Client::getRealName() const {return (this->real_name);}
 
 bool           Client::getAdmin() const {return (this->admin);}
+
+std::string   Client::getPrifex()
+{
+    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (utils::getHostName().empty() ? "" : "@localhost");
+}

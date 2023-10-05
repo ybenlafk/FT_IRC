@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:26:59 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 21:10:41 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/05 13:38:23 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ class Client
         std::string     getUserName() const;
         std::string     getRealName() const;
         bool            getAdmin() const;
+
+        std::string      getPrifex();
 };
 
 #endif

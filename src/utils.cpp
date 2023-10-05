@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 17:06:49 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/05 16:18:22 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,4 +167,10 @@ int    utils::split(std::string str, char c, vec_str *names, std::string *reason
     }
     *reason = word;
     return (1);
+}
+
+void    utils::reply(int fd, std::string msg, std::string prefix)
+{
+    msg = ":" + prefix + " " + msg;
+    utils::ft_send(fd, msg);
 }
