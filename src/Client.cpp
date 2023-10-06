@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 11:29:46 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 16:05:49 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,21 @@ void           Client::setPw(bool pw) {this->pw = pw;}
 
 void           Client::setNickName(std::string nick_name) {this->nick_name = nick_name;}
 
-void           Client::setUserName(std::string user_name) {this->user_name = user_name;}
+void           Client::setUserName(std::string user_name)
+{
+    std::string tmp = "";
+    size_t i = 0;
+    while (user_name[i] && user_name[i] != ' ') tmp += user_name[i++];
+    this->user_name = utils::strTrim(tmp, "\r\n\t ");
+    if (user_name[i] && user_name[i] == ' ') i++;
+    if (user_name[i] && user_name[i] == '0') i++;
+    if (user_name[i] && user_name[i] == ' ') i++;
+    if (user_name[i] && user_name[i] == '*') i++;
+    if (user_name[i] && user_name[i] == ' ') i++;
+    tmp = "";
+    while (user_name[i]) tmp += user_name[i++];
+    this->real_name = utils::strTrim(tmp, "\r\n\t ");
+}
 
 void           Client::setRealName(std::string real_name) {this->real_name = real_name;}
 

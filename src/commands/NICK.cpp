@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:12 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 15:22:50 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 16:12:51 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ void    Cmds::cmdNick(vec_client &clients, int fd, std::string nick)
     {
         if (clients[i]->getFd() == fd)
         {
+            if (nick.empty())
+            {
+                utils::reply(fd, "431 * :No nickname given\r\n", clients[i]->getPrifex());
+                return ;
+            }
             clients[i]->setNickName(nick);
             return ;
         }

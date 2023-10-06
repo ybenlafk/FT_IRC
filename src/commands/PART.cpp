@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:15 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 15:54:06 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 18:08:19 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,16 @@ void    removeFromChannel(map_channel &channels, int fd, std::string name, vec_c
     }
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i]->getChannels().find(name) != clients[i]->getChannels().end())
-            clients[i]->getChannels().erase(name);
+        if (clients[i]->getFd() == fd)
+        {
+            if (clients[i]->getChannels().find(name) != clients[i]->getChannels().end())
+                clients[i]->getChannels().erase(name);
+        }
     }
-    
+}
+
+void    sendToMembers(map_channel &channels, int fd, std::string name, vec_client &clients)
+{
     Client *client = NULL;
     
     if (channels.find(name) != channels.end())
@@ -44,14 +50,14 @@ void    removeFromChannel(map_channel &channels, int fd, std::string name, vec_c
         return ;
     if (channels.find(name) != channels.end())
     {
-        for (size_t i = 0; i < clients.size(); i++)
+        for (size_t i = 0; i < channels[name]->get_clients().size(); i++)
         {
-            if (clients[i]->getFd() != fd)
-                utils::reply(clients[i]->getFd(), "PART " + name + "\r\n", client->getPrifex());
+            if (channels[name]->get_clients()[i].getFd() != fd)
+                utils::reply(channels[name]->get_clients()[i].getFd(), "PART " + name + "\r\n", client->getPrifex());
         }
     }
 }
-typedef std::map<std::string, bool> m_channel;
+
 void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::string value)
 {
     for (size_t i = 0; i < clients.size(); i++)
@@ -79,6 +85,7 @@ void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::s
                                 utils::reply(fd, "PART " + names[j] + " :" + reason + "\r\n", clients[i]->getPrifex());
                             clients[i]->getChannels().erase(names[j]);
                             removeFromChannel(channels, fd, names[j], clients);
+                            sendToMembers(channels, fd, names[j], clients);
                             printChannels(channels);
                             for (size_t l = 0; l < clients.size(); l++)
                                 for (m_channel::iterator it = clients[l]->getChannels().begin(); it != clients[l]->getChannels().end(); it++)
@@ -88,7 +95,7 @@ void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::s
                             utils::reply(fd, "442 * " + names[j] + " :You're not on that channel\r\n", clients[i]->getPrifex());
                     }
                     else
-                    utils::reply(fd, "403 * " + names[j] + " :No such channel\r\n", clients[i]->getPrifex());
+                        utils::reply(fd, "403 * " + names[j] + " :No such channel\r\n", clients[i]->getPrifex());
                 }
             }
         }

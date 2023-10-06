@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 15:45:33 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 16:33:44 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,13 +121,14 @@ void Server::handleClients(int ServerSocket)
                             else if ((*it)->getAuth() == true)
                             {
                                 // std::cout << "buffer: " << buffer << std::endl;
-                                std::string cmds[9] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART"};
+                                std::string cmds[11] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER"};
                                 std::string cmd = utils::strTrim(buffer, "\r\n\t ");
                                 cmd = utils::getCmd(buffer, ' ');
+                                cmd = utils::strTrim(cmd, "\r\n\t ");
                                 std::string value = utils::getValue(buffer, ' ');
                                 value = utils::strTrim(value, "\r\n\t ");
                                 size_t l = 0;
-                                for (; l < 9; l++)
+                                for (; l < 11; l++)
                                     if (cmd == cmds[l]) break;
                                 switch (l)
                                 {
@@ -144,7 +145,7 @@ void Server::handleClients(int ServerSocket)
                                         Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels);
                                         break;
                                     case 4:
-                                        // KICK handler
+                                        Cmds::cmdKick(this->channels, clients, this->pollfds[i].fd, value);
                                         break;
                                     case 5:
                                         // INVITE handler
@@ -157,6 +158,12 @@ void Server::handleClients(int ServerSocket)
                                         break;
                                     case 8:
                                         Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value);
+                                        break;
+                                    case 9:
+                                        utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
+                                        break;
+                                    case 10:
+                                        utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
                                         break;
                                 default:
                                     std::string msg = "421 " + (*it)->getNickName() + " :Unknown command\r\n";

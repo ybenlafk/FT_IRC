@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:40:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 15:22:32 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 17:45:34 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,12 @@ class Cmds
         static  void    cmdPrivmsg(vec_client clients, int fd, std::string value, map_channel &channels);
         static  void    cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value);
         static  void    cmdPart(map_channel &channels, vec_client &clients, int fd, std::string value);
+        static  void    cmdKick(map_channel &channels, vec_client &clients, int fd, std::string value);
 };
+
+void    removeFromChannel(map_channel &channels, int fd, std::string name, vec_client &clients);
 void    printChannels(map_channel &channels);
 bool    isClientExist(vec_member clients, int fd);
 bool    isJoined(Client &client, std::string &name);
+
 #endif
