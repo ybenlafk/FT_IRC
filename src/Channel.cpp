@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:22 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 21:08:23 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 14:40:59 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,3 +47,17 @@ bool        Channel::get_invite_only() const {return this->invite_only;}
 bool        Channel::get_topic_changeable() const {return this->topic_changeable;}
 
 int         Channel::get_limit() const {return this->limit;}
+
+std::string  Channel::get_members()
+{
+    std::string res;
+    for (size_t i = 0; i < this->clients.size(); i++)
+    {
+        if (this->clients[i].getChannels()[this->name])
+            res += "@";
+        res += this->clients[i].getNickName();
+        if (i + 1 < this->clients.size())
+            res += " ";
+    }
+    return (res);
+}

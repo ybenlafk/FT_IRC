@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/04 21:08:30 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 14:39:54 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ class Channel
         int         limit;
     public:
         Channel(){}
-        Channel(std::string name, std::string key) : name(name), key(key) {}
+        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), topic_changeable(true), limit(1) {}
         ~Channel(){}
-        
+
         void        add_client(Client client);
         
         void        set_name(std::string name);
@@ -57,6 +57,8 @@ class Channel
         bool        get_invite_only() const;
         bool        get_topic_changeable() const;
         int         get_limit() const;
+
+        std::string get_members();
 };
 
 #endif

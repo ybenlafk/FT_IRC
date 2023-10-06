@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/05 16:52:46 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 13:05:57 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void Server::handleClients(int ServerSocket)
                 int clientSocket = accept(ServerSocket, NULL, NULL);
                 if (clientSocket < 0)
                     throw std::runtime_error("accept() failed");
+                fcntl(clientSocket, F_SETFL, O_NONBLOCK);
                 struct pollfd pollfdClient;
                 pollfdClient.fd = clientSocket;
                 pollfdClient.events = POLLIN;
@@ -91,7 +92,7 @@ void Server::handleClients(int ServerSocket)
                 }
                 else if (bytesRead == 0)
                 {
-                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected");
+                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels);
                     break;
                 }
                 if (bytesRead > 0)
@@ -101,7 +102,6 @@ void Server::handleClients(int ServerSocket)
                     vec_client::iterator it = clients.begin();
                     for (; it != clients.end(); it++)
                     {
-                        // std::cout << "nick: " << (*it)->getNickName() << ((*it)->getAuth() ? "(true)" : "(false)") << std::endl;
                         if ((*it)->getFd() == this->pollfds[i].fd)
                         {
                             if ((*it)->getAuth() == false)
@@ -140,7 +140,7 @@ void Server::handleClients(int ServerSocket)
                                         // MODE handler
                                         break;
                                     case 3:
-                                        Cmds::cmdQuit(clients, this->pollfds[i].fd, value);
+                                        Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels);
                                         break;
                                     case 4:
                                         // KICK handler
@@ -176,6 +176,7 @@ void Server::handleClients(int ServerSocket)
 void    Server::run()
 {
     int    ServerSocket = utils::setUpServer(&this->clients, this->port);
+    fcntl(ServerSocket, F_SETFL, O_NONBLOCK);
     struct pollfd pollfdServer;
     pollfdServer.fd = ServerSocket;
     pollfdServer.events = POLLIN;

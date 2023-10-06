@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/05 16:30:30 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 11:29:46 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,5 @@ bool           Client::getAdmin() const {return (this->admin);}
 
 std::string   Client::getPrifex()
 {
-    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (utils::getHostName().empty() ? "" : "@localhost");
+    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (utils::getHostName().empty() ? "" : "@" + utils::getHostName());
 }
