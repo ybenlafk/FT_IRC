@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 14:39:54 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 14:53:00 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Channel
         int         limit;
     public:
         Channel(){}
-        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), topic_changeable(true), limit(1) {}
+        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), topic_changeable(true), limit(INT_MAX) {}
         ~Channel(){}
 
         void        add_client(Client client);

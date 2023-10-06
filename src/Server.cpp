@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 13:05:57 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 15:45:33 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ void Server::handleClients(int ServerSocket)
                 }
                 if (bytesRead > 0)
                 {
+                    // std::cout << "buffer: " << buffer;
                     if (isExist(this->clients, this->pollfds[i].fd))
                         clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false, false));
                     vec_client::iterator it = clients.begin();

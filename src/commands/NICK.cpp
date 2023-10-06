@@ -6,13 +6,13 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:12 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 12:51:34 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 15:22:50 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Cmds.hpp"
 
-void    Cmds::cmdNick(vec_client clients, int fd, std::string nick)
+void    Cmds::cmdNick(vec_client &clients, int fd, std::string nick)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 14:49:39 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/06 15:23:32 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,22 @@ bool    isClientExist(vec_member clients, int fd)
     return (true);
 }
 
+void    serv_reply(vec_str names, map_channel &channels, Client *client, size_t i)
+{
+    utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getPrifex());
+    utils::reply(client->getFd(), "332 " + names[i] + " : " + channels[names[i]]->get_topic() + "\r\n", client->getPrifex());
+    utils::reply(client->getFd(), "353 " + names[i] + " = " + client->getNickName() + " :" + channels[names[i]]->get_members() + "\r\n", client->getPrifex());
+    utils::reply(client->getFd(), "366 " + names[i] + " :End of /NAMES list\r\n", client->getPrifex());
+    for (size_t j = 0; j < channels[names[i]]->get_clients().size(); j++)
+        if (channels[names[i]]->get_clients()[j].getNickName() != client->getNickName())
+            utils::reply(channels[names[i]]->get_clients()[j].getFd(), "JOIN :" + names[i] + "\r\n", client->getPrifex());
+}
+
 bool    isValidChannel(map_channel &channels, vec_str names, Client *client, size_t i)
 {
-    if (channels[names[i]]->get_invite_only())
+    if (!channels[names[i]]->get_invite_only())
     {
-        std::cout << channels[names[i]]->get_clients().size() <<" "<< (size_t)channels[names[i]]->get_limit() << std::endl;
+        // std::cout << channels[names[i]]->get_clients().size() <<" "<< (size_t)channels[names[i]]->get_limit() << std::endl;
         if (channels[names[i]]->get_clients().size() < (size_t)channels[names[i]]->get_limit())
             return (true);
         else
@@ -102,10 +113,7 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                             client->add_channel(names[i], false);
                             if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
                                 channels[names[i]]->add_client(*client);
-                            utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getPrifex());
-                            utils::reply(client->getFd(), "332 " + names[i] + " : This is my cool channel!\r\n", client->getPrifex());
-                            utils::reply(client->getFd(), "353 " + names[i] + " = " + client->getNickName() + " :" + channels[names[i]]->get_members() + "\r\n", client->getPrifex());
-                            utils::reply(client->getFd(), "366 " + names[i] + " :End of /NAMES list\r\n", client->getPrifex());
+                            serv_reply(names, channels, client, i);
                         }
                     }
                     else
@@ -121,17 +129,14 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                     client->add_channel(names[i], false);
                     if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
                         channels[names[i]]->add_client(*client);
-                    utils::reply(client->getFd(), "JOIN " + names[i] + "\r\n", client->getPrifex());
-                    utils::reply(client->getFd(), "332 " + names[i] + " : This is my cool channel!\r\n", client->getPrifex());
-                    utils::reply(client->getFd(), "353 " + names[i] + " = " + client->getNickName() + " :" + channels[names[i]]->get_members() + "\r\n", client->getPrifex());
-                    utils::reply(client->getFd(), "366 " + names[i] + " :End of /NAMES list\r\n", client->getPrifex());
+                    serv_reply(names, channels, client, i);
                 }
             }
         }
     }
 }
 
-void    Cmds::cmdJoin(map_channel &channels, vec_client clients, int fd, std::string value)
+void    Cmds::cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
