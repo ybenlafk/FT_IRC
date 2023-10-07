@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 16:33:44 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/07 15:50:15 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,19 @@ bool    isExist(vec_client clients, int fd)
     return (true);
 }
 
+int    bufferChecker(std::string buffer, std::string &poper)
+{
+    size_t i = buffer.size();
+    if (i > 512) return (2);
+    i--;
+    poper.append(buffer);
+    if (i >= 1 && buffer[i] == '\n' && buffer[i - 1] == '\r')
+        return (1);
+    if (buffer[i] == '\n')
+        return (1);
+    return (0);
+}
+
 void Server::handleClients(int ServerSocket)
 {
     for (size_t i = 0; i < this->pollfds.size(); i++)
@@ -81,6 +94,7 @@ void Server::handleClients(int ServerSocket)
             }
             else
             {
+                static std::string poper;
                 char buffer[FD_SETSIZE];
                 memset(buffer, 0, FD_SETSIZE);
                 ssize_t bytesRead = recv(this->pollfds[i].fd, buffer, FD_SETSIZE - 1, 0);
@@ -97,7 +111,14 @@ void Server::handleClients(int ServerSocket)
                 }
                 if (bytesRead > 0)
                 {
-                    // std::cout << "buffer: " << buffer;
+                    int res = bufferChecker(buffer, poper);
+                    if (res == 0)
+                        continue;
+                    else if (res == 2)
+                    {
+                        utils::ft_send(this->pollfds[i].fd, "417 * :Too long command\r\n");
+                        continue;
+                    }
                     if (isExist(this->clients, this->pollfds[i].fd))
                         clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false, false));
                     vec_client::iterator it = clients.begin();
@@ -107,7 +128,7 @@ void Server::handleClients(int ServerSocket)
                         {
                             if ((*it)->getAuth() == false)
                             {
-                                int res = AddClient(buffer, *it, this->pollfds[i].fd);
+                                int res = AddClient(poper, *it, this->pollfds[i].fd);
                                 if (res == 1)
                                     utils::ft_send(this->pollfds[i].fd, "464 * :Password incorrect\r\n");
                                 else if (res == 2)
@@ -122,10 +143,10 @@ void Server::handleClients(int ServerSocket)
                             {
                                 // std::cout << "buffer: " << buffer << std::endl;
                                 std::string cmds[11] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER"};
-                                std::string cmd = utils::strTrim(buffer, "\r\n\t ");
-                                cmd = utils::getCmd(buffer, ' ');
+                                std::string cmd = utils::strTrim(poper, "\r\n\t ");
+                                cmd = utils::getCmd(poper, ' ');
                                 cmd = utils::strTrim(cmd, "\r\n\t ");
-                                std::string value = utils::getValue(buffer, ' ');
+                                std::string value = utils::getValue(poper, ' ');
                                 value = utils::strTrim(value, "\r\n\t ");
                                 size_t l = 0;
                                 for (; l < 11; l++)
@@ -171,7 +192,7 @@ void Server::handleClients(int ServerSocket)
                                     break;
                                 }
                             }
-                            
+                            poper = "";
                             break;
                         }
                     }
