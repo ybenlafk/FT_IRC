@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 16:05:49 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/15 11:47:04 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,21 @@
 
 Client::Client() {}
 
+Client &Client::operator=(const Client &s)
+{
+    if (this != &s)
+    {
+        this->fd = s.fd;
+        this->nick_name = s.nick_name;
+        this->user_name = s.user_name;
+        this->real_name = s.real_name;
+        this->channels = s.channels;
+        this->pw = s.pw;
+        this->auth = s.auth;
+        this->admin = s.admin;
+    }
+    return *this;
+}
 Client::Client(Client const &src)
 {
     if (this != &src)

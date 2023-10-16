@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:26:59 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/05 13:38:23 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/15 11:46:57 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class Client
         std::string     nick_name;
         std::string     user_name;
         std::string     real_name;
-        m_channel     channels;
+        m_channel       channels;
         bool            pw;
         bool            auth;
         bool            admin;
@@ -32,6 +32,7 @@ class Client
         Client();
         Client(Client const &src);
         ~Client();
+        Client &operator=(const Client &s);
         Client(int fd, std::string nick_name, std::string user_name, std::string real_name, bool auth, bool admin);
 
         void            add_channel(std::string &name, bool admin);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 14:53:00 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/15 12:06:03 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ class Channel
         int         limit;
     public:
         Channel(){}
+        Channel& operator=(Channel const &);
         Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), topic_changeable(true), limit(INT_MAX) {}
         ~Channel(){}
 
         void        add_client(Client client);
-        
         void        set_name(std::string name);
         void        set_topic(std::string topic);
         void        set_mode(std::string mode);

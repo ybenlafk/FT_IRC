@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:22 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 14:40:59 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/15 12:08:20 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,21 @@ std::string  Channel::get_members()
             res += " ";
     }
     return (res);
+}
+
+Channel &Channel:: operator=(Channel const &s)
+{
+    if (this != &s)
+    {
+        this->name = s.name;
+        this->clients = s.clients;
+        this->topic = s.topic;
+        this->mode = s.mode;
+        this->key = s.key;
+        this->pw = s.pw;
+        this->invite_only = s.invite_only;
+        this->topic_changeable = s.topic_changeable;
+        this->limit = s.limit;
+    }
+    return *this;
 }

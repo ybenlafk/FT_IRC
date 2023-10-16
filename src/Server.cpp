@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/07 15:50:15 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/14 18:01:27 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,7 @@ void Server::handleClients(int ServerSocket)
                                         break;
                                     case 2:
                                         // MODE handler
+                                        Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value);
                                         break;
                                     case 3:
                                         Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels);
