@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/05 16:18:22 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/16 13:51:34 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void         utils::spaceSkipe(std::string &str)
 int     utils::setUpServer(vec_client *clients, int port)
 {
     int    ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-    clients->push_back(new Client(-1, "", "", "", false, false));
+    clients->push_back(new Client(-1, "", "", "", false));
     if (ServerSocket < 0)
         throw std::runtime_error("socket() failed");
 
@@ -63,7 +63,7 @@ int     utils::setUpServer(vec_client *clients, int port)
     if (port < 0 || port > 65535)
         throw   std::runtime_error("Invalid port");
     struct sockaddr_in serverAddress;
-    memset(&serverAddress, 0, sizeof(serverAddress));
+    std::memset(&serverAddress, 0, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     serverAddress.sin_port = htons(port);
@@ -129,10 +129,17 @@ bool         utils::isValidName(std::string name)
 
 std::string utils::getHostName()
 {
-    char hostName[1024];
-    if (gethostname(hostName, 1024) != 0)
-        throw std::runtime_error("gethostname() failed");
-    return (hostName);
+    if (std::system("uname -n > /tmp/hostname") == -1)
+        throw std::runtime_error("system() failed");
+    std::ifstream file("/tmp/hostname");
+    if (!file.is_open())
+        throw std::runtime_error("open() failed");
+    std::string hostname;
+    std::getline(file, hostname);
+    file.close();
+    if (std::system("rm -rf /tmp/hostname") == -1)
+        throw std::runtime_error("system() failed");
+    return (hostname);
 }
 
 int    utils::split(std::string str, char c, vec_str *names, std::string *reason)
@@ -173,4 +180,9 @@ void    utils::reply(int fd, std::string msg, std::string prefix)
 {
     msg = ":" + prefix + " " + msg;
     utils::ft_send(fd, msg);
+}
+
+std::string     utils::get_ip(sockaddr_in user_addr)
+{
+    return (inet_ntoa(user_addr.sin_addr));
 }

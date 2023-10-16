@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:21 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 12:53:31 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/16 10:09:26 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,22 @@ bool    isJoined(Client &client, std::string &name)
     return (false);
 }
 
+Client *getClientByFd(int fd, vec_client clients)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() == fd)
+            return (clients[i]);
+    }
+    return (NULL);
+}
+
 void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_channel &channels)
 {
     std::string target = "", msg = "";
+    Client *client = getClientByFd(fd, clients);
+    if (!client)
+        return ;
     int i = 0;
     while (value[i] && value[i] != ':')
         target += value[i++];
@@ -37,7 +50,7 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
         msg += value[i++];
     if (target.empty() || msg.empty())
     {
-        utils::ft_send(fd, "412 * :No message to send\r\n");
+        utils::reply(fd, "412 * :No message to send\r\n", client->getPrifex());
         return ;
     }
     if (target[0] == '#')
@@ -49,13 +62,13 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
             {
                 if (chan->get_clients()[i].getFd() != fd && isJoined(chan->get_clients()[i], target))
                 {
-                    msg = utils::strTrim(msg, "\r\n\t ");
-                    utils::ft_send(chan->get_clients()[i].getFd(), "PRIVMSG " + target + " :" + msg + "\r\n");
+                    msg = utils::strTrim(msg, "\r\n\t: ");
+                    utils::reply(chan->get_clients()[i].getFd(), "PRIVMSG " + target + " :" + msg + "\r\n", client->getPrifex());
                 }
             }
         }
         else
-            utils::ft_send(fd, "402 * " + target + " :No such nick/channel\r\n");
+            utils::reply(fd, "401 * " + target + " :No such nick/channel\r\n", client->getPrifex());
     }
     else
     {
@@ -65,18 +78,18 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
             {
                 if (clients[i]->getAuth())
                 {
-                    msg = utils::strTrim(msg, "\r\n\t ");
-                    utils::ft_send(clients[i]->getFd(), "PRIVMSG " + target + " :" + msg + "\r\n");
+                    msg = utils::strTrim(msg, "\r\n\t: ");
+                    utils::reply(clients[i]->getFd(), "PRIVMSG " + target + " :" + msg + "\r\n", client->getPrifex());
                     return ;
                 }
                 else
                 {
-                    utils::ft_send(fd, "401 * " + target + " :No such nick/channel\r\n");
+                    utils::reply(fd, "401 * " + target + " :No such nick/channel\r\n", client->getPrifex());
                     return ;   
                 }
                 return ;
             }
         }
-        utils::ft_send(fd, "401 * " + target + " :No such nick/channel\r\n");
+        utils::reply(fd, "401 * " + target + " :No such nick/channel\r\n", client->getPrifex());
     }
 }

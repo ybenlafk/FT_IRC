@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 15:23:32 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/16 09:32:18 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ bool    isValidChannel(map_channel &channels, vec_str names, Client *client, siz
 {
     if (!channels[names[i]]->get_invite_only())
     {
-        // std::cout << channels[names[i]]->get_clients().size() <<" "<< (size_t)channels[names[i]]->get_limit() << std::endl;
         if (channels[names[i]]->get_clients().size() < (size_t)channels[names[i]]->get_limit())
             return (true);
         else

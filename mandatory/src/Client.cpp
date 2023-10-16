@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 16:05:49 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/16 10:03:58 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,12 @@ Client::Client(Client const &src)
         this->channels = src.channels;
         this->pw = src.pw;
         this->auth = src.auth;
-        this->admin = src.admin;
     }
 }
 
 Client::~Client() {}
 
-Client::Client(int fd, std::string nick_name, std::string user_name, std::string real_name, bool auth, bool admin) : fd(fd), nick_name(nick_name), user_name(user_name), real_name(real_name), auth(auth), admin(admin) {}
+Client::Client(int fd, std::string nick_name, std::string user_name, std::string real_name, bool auth) : fd(fd), nick_name(nick_name), user_name(user_name), real_name(real_name), auth(auth) {}
 
 void           Client::add_channel(std::string &name, bool admin) {this->channels[name] = admin;}
 
@@ -45,6 +44,8 @@ void           Client::setFd(int fd) {this->fd = fd;}
 void           Client::setPw(bool pw) {this->pw = pw;}
 
 void           Client::setNickName(std::string nick_name) {this->nick_name = nick_name;}
+
+void            Client::setIpAddr(std::string ip_addr) {this->ip_addr = ip_addr;}
 
 void           Client::setUserName(std::string user_name)
 {
@@ -64,8 +65,6 @@ void           Client::setUserName(std::string user_name)
 
 void           Client::setRealName(std::string real_name) {this->real_name = real_name;}
 
-void           Client::setAdmin(bool admin) {this->admin = admin;}
-
 bool           Client::getAuth() const {return (this->auth);}
 
 bool           Client::getPw() const {return (this->pw);}
@@ -78,9 +77,10 @@ std::string    Client::getUserName() const {return (this->user_name);}
 
 std::string    Client::getRealName() const {return (this->real_name);}
 
-bool           Client::getAdmin() const {return (this->admin);}
+std::string    Client::getIpAddr() const {return (this->ip_addr);}
 
 std::string   Client::getPrifex()
 {
-    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (utils::getHostName().empty() ? "" : "@" + utils::getHostName());
+    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (this->getIpAddr().empty() ? "" : "@" + this->getIpAddr());
+    // return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (utils::getHostName().empty() ? "" : "@" + utils::getHostName());
 }

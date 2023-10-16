@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:46:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/05 13:45:12 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/14 20:21:14 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,6 @@ class utils
         static bool         isValidName(std::string name);
         static std::string  getHostName();
         static void         reply(int fd, std::string msg, std::string prefix);
+        static std::string  get_ip(sockaddr_in user_addr);
 };
 #endif
