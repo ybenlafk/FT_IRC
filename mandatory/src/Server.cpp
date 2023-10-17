@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 11:25:27 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 13:28:56 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
+                        std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)

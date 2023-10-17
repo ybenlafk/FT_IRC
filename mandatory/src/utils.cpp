@@ -3,14 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/16 13:51:34 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 13:15:54 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.hpp"
+
+
+Client *utils::getClientByFd(int fd, vec_client clients)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i]->getFd() == fd)
+            return (clients[i]);
+    }
+    return (NULL);
+}
+
 
 std::string utils::getCmd(std::string str, char c)
 {

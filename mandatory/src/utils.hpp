@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:46:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/14 20:21:14 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 14:29:52 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,12 @@
 # include "headers.hpp"
 # include "defines.hpp"
 # include "Channel.hpp"
+typedef std::vector<Client> vec_member;
 
 class utils
 {
     public:
+        static Client *getClientByFd(int fd, vec_client clients);
         static std::string  getCmd(std::string str, char c);
         static std::string  getValue(std::string str, char c);
         static std::string  strTrim(std::string str, std::string chars);
@@ -33,4 +35,8 @@ class utils
         static void         reply(int fd, std::string msg, std::string prefix);
         static std::string  get_ip(sockaddr_in user_addr);
 };
+
+std::vector<std::string> split_it(std::string str);
+int check_int(std::string tab, int fd, Client *sender);
+
 #endif

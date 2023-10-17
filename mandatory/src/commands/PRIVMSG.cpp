@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PRIVMSG.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:21 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/16 10:09:26 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 13:04:39 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,10 @@ bool    isJoined(Client &client, std::string &name)
     return (false);
 }
 
-Client *getClientByFd(int fd, vec_client clients)
-{
-    for (size_t i = 0; i < clients.size(); i++)
-    {
-        if (clients[i]->getFd() == fd)
-            return (clients[i]);
-    }
-    return (NULL);
-}
-
 void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_channel &channels)
 {
     std::string target = "", msg = "";
-    Client *client = getClientByFd(fd, clients);
+    Client *client = utils::getClientByFd(fd, clients);
     if (!client)
         return ;
     int i = 0;
