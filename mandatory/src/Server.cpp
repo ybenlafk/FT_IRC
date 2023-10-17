@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 11:25:27 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 18:09:14 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ void Server::handleClients(int ServerSocket)
                                         utils::ft_send(this->pollfds[i].fd, "433 * :Nickname is already in use\r\n");
                                     else if (res == 0 && (*it)->getAuth() == true)
                                     {
-                                        std::cout << "Client connected" << std::endl;
+                                        std::cout << "Client " << (*it)->getNickName() <<" connected" << std::endl;
                                         (*it)->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
                                         utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to the Internet Relay Network\r\n", (*it)->getPrifex());
                                     }

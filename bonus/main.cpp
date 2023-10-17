@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 11:37:08 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 15:40:00 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,31 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include <fcntl.h>
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <dirent.h>
+
+std::vector<std::string> getFileNames(std::string file)
+{
+    std::vector<std::string> res;
+    std::string cmd = "ls " + file + " > /tmp/list.txt";
+    std::system(cmd.c_str());
+    std::ifstream ifs("/tmp/list.txt");
+    std::system("rm /tmp/list.txt");
+    std::string line;
+    while (std::getline(ifs, line))
+        res.push_back(line);
+    ifs.close();
+    return (res);
+}
+
+std::string getRandomSong(std::vector<std::string> files)
+{
+    std::srand(std::time(NULL));
+    return ( "music/" + files[std::rand() % files.size()]);
+}
 
 void ft_send(int fd, std::string msg)
 {
@@ -79,6 +104,7 @@ int main(int ac, char **av)
             std::string av1 = av[1];
             std::string host = av[2];
             std::string pw = av[3];
+            std::vector<std::string> files = getFileNames("./music");
             if (av1.empty() || host.empty() || pw.empty()) return (0);
             int port  = std::atoi(av1.c_str());
 
@@ -94,12 +120,11 @@ int main(int ac, char **av)
             add.sin_port = htons(port);
 
             if (connect(sock, (struct sockaddr *)&add, sizeof(add)) == -1) return (0);
-            // fcntl(sock, F_SETFL, O_NONBLOCK);
+
             std::string nick = "tchipa";
             ft_send(sock, "PASS " + pw + "\r\n");
             ft_send(sock, "NICK " + nick + "\r\n");
             ft_send(sock, "USER " + nick + " 0 * :" + nick + "\r\n");
-            std::string song = "music1.mp3";
             while(true)
             {
                 char buffer[1024];
@@ -108,6 +133,7 @@ int main(int ac, char **av)
                 buffer[fd] = '\0';
                 std::string msg = strTrim(buffer, " \t\r\n");
                 msg = getValue(msg, ':');
+                std::string song = getRandomSong(files);
                 if (msg == "play")
                 {
                     playMP3(song);
