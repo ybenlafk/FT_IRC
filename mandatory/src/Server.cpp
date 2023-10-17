@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 18:09:14 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 21:38:51 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,8 +222,7 @@ void Server::handleClients(int ServerSocket)
                                             utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
                                             break;
                                     default:
-                                        std::string msg = "421 " + (*it)->getNickName() + " :Unknown command\r\n";
-                                        send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
+                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", (*it)->getPrifex());
                                         break;
                                     }
                                 }

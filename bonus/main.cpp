@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 15:40:00 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 21:39:33 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,29 +17,20 @@
 #include <cstdlib>
 #include <netdb.h>
 #include <sys/types.h>
-#include <poll.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <algorithm>
 #include <cstdio>
 #include <ctime>
-#include <arpa/inet.h>
 #include <fstream>
 #include <fcntl.h>
-
-#include <iostream>
 #include <vector>
 #include <string>
-#include <dirent.h>
 
 std::vector<std::string> getFileNames(std::string file)
 {
     std::vector<std::string> res;
-    std::string cmd = "ls " + file + " > /tmp/list.txt";
-    std::system(cmd.c_str());
-    std::ifstream ifs("/tmp/list.txt");
-    std::system("rm /tmp/list.txt");
+    std::ifstream ifs(file);
     std::string line;
     while (std::getline(ifs, line))
         res.push_back(line);
@@ -50,7 +41,7 @@ std::vector<std::string> getFileNames(std::string file)
 std::string getRandomSong(std::vector<std::string> files)
 {
     std::srand(std::time(NULL));
-    return ( "music/" + files[std::rand() % files.size()]);
+    return (files[std::rand() % files.size()]);
 }
 
 void ft_send(int fd, std::string msg)
@@ -89,12 +80,6 @@ void playMP3(const std::string& filePath)
     system(command.c_str());
 }
 
-void stopMP3()
-{
-    std::string command = "kill $(pgrep -x Music)";
-    system(command.c_str());
-}
-
 int main(int ac, char **av)
 {
     try
@@ -104,7 +89,7 @@ int main(int ac, char **av)
             std::string av1 = av[1];
             std::string host = av[2];
             std::string pw = av[3];
-            std::vector<std::string> files = getFileNames("./music");
+            std::vector<std::string> files = getFileNames("./songs.config");
             if (av1.empty() || host.empty() || pw.empty()) return (0);
             int port  = std::atoi(av1.c_str());
 
@@ -120,7 +105,7 @@ int main(int ac, char **av)
             add.sin_port = htons(port);
 
             if (connect(sock, (struct sockaddr *)&add, sizeof(add)) == -1) return (0);
-
+            fcntl(sock, F_SETFL, O_NONBLOCK);
             std::string nick = "tchipa";
             ft_send(sock, "PASS " + pw + "\r\n");
             ft_send(sock, "NICK " + nick + "\r\n");
@@ -129,7 +114,7 @@ int main(int ac, char **av)
             {
                 char buffer[1024];
                 int fd = recv(sock, buffer, 1023, 0);
-                if (fd < 0) throw std::runtime_error("recv failed");
+                if (fd < 0) continue;
                 buffer[fd] = '\0';
                 std::string msg = strTrim(buffer, " \t\r\n");
                 msg = getValue(msg, ':');
@@ -138,16 +123,11 @@ int main(int ac, char **av)
                 {
                     playMP3(song);
                     std::system("clear");
-                    std::cout << "\033[1;32m ♬ " << song << " is playing... \033[0m" << std::endl;
+                    std::cout << "\033[1;32m ♬ the song is playing... \033[0m" << std::endl;
                 }
-                else if (msg == "stop")
-                {
-                    stopMP3();
-                    std::system("clear");
-                    std::cout << "\033[1;31m" << song << " is stoped!\033[0m" << std::endl;
-                }
+                else
+                    ft_send(sock, "421 tchipa :Unknown command\r\n");
             }
-            stopMP3();
         }
     }
     catch(const std::exception& e)

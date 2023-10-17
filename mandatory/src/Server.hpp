@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/16 15:04:11 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 22:11:23 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Server
         map_int_addr addrs;
         vec_str     buffers;
         Server(int port, std::string password) : port(port), password(password){}
-        ~Server() {}
+        ~Server() {} 
         void        run();
         void        handleClients(int ServerSocket);
         int         AddClient(std::string pw, Client *client, int fd);
