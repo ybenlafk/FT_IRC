@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/16 18:34:59 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 10:18:26 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,7 @@ void Server::handleClients(int ServerSocket)
                                             Cmds::cmdJoin(this->channels, clients, this->pollfds[i].fd, value);
                                             break;
                                         case 2:
-                                            // MODE handler
+                                            Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value);
                                             break;
                                         case 3:
                                             Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels);
