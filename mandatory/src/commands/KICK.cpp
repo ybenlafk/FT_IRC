@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:48 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 18:34:11 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 18:31:01 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,18 +78,10 @@ bool    isOperator(vec_client &clients, int fd, std::string name)
     return (false);
 }
 
-Client *getClientByFd(vec_client &clients, int fd)
-{
-    for (size_t i = 0; i < clients.size(); i++)
-        if (clients[i]->getFd() == fd)
-            return (clients[i]);
-    return (NULL);
-}
-
 void    Cmds::cmdKick(map_channel &channels, vec_client &clients, int fd, std::string value)
 {
     vec_str params = getParams(value);
-    Client *client = getClientByFd(clients, fd);
+    Client *client = utils::getClientByFd(fd, clients);
     if (client == NULL)
     {
         utils::ft_send(fd, "451 KICK :You have not registered\r\n");

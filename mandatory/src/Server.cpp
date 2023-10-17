@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 13:28:56 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/17 21:38:51 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,7 +146,7 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
+                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)
@@ -170,7 +170,7 @@ void Server::handleClients(int ServerSocket)
                                         utils::ft_send(this->pollfds[i].fd, "433 * :Nickname is already in use\r\n");
                                     else if (res == 0 && (*it)->getAuth() == true)
                                     {
-                                        std::cout << "Client connected" << std::endl;
+                                        std::cout << "Client " << (*it)->getNickName() <<" connected" << std::endl;
                                         (*it)->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
                                         utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to the Internet Relay Network\r\n", (*it)->getPrifex());
                                     }
@@ -222,8 +222,7 @@ void Server::handleClients(int ServerSocket)
                                             utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
                                             break;
                                     default:
-                                        std::string msg = "421 " + (*it)->getNickName() + " :Unknown command\r\n";
-                                        send(this->pollfds[i].fd, msg.c_str(), msg.length(), 0);
+                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", (*it)->getPrifex());
                                         break;
                                     }
                                 }
