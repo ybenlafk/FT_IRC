@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 10:18:26 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/17 11:25:27 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,6 @@ void Server::handleClients(int ServerSocket)
                 char buffer[FD_SETSIZE];
                 std::memset(buffer, 0, FD_SETSIZE);
                 ssize_t bytesRead = recv(this->pollfds[i].fd, buffer, FD_SETSIZE - 1, 0);
-                fillBuffers(this->buffers, buffer);
                 // for (int p = 0; p < (int )buffers.size(); p++)
                 //     std::cout << buffers[p] << std::endl;
                 if (bytesRead < 0)
@@ -140,12 +139,14 @@ void Server::handleClients(int ServerSocket)
                     Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels);
                     break;
                 }
+                buffer[bytesRead] = '\0';
+                fillBuffers(this->buffers, buffer);
                 if (bytesRead > 0)
                 {
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
+                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)
@@ -241,7 +242,7 @@ void Server::handleClients(int ServerSocket)
 void    Server::run()
 {
     int    ServerSocket = utils::setUpServer(&this->clients, this->port);
-    std::cout << utils::getHostName() << std::endl;
+    std::cout << "\033[1;32m" << utils::getHostName() << "\033[0m" << std::endl;
     fcntl(ServerSocket, F_SETFL, O_NONBLOCK);
     struct pollfd pollfdServer;
     pollfdServer.fd = ServerSocket;
