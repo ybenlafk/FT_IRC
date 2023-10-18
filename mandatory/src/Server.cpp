@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 17:58:52 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/18 20:25:37 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,7 +143,7 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
+                        std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)
@@ -174,14 +174,14 @@ void Server::handleClients(int ServerSocket)
                                 }
                                 else if ((*it)->getAuth() == true)
                                 {
-                                    std::string cmds[11] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER"};
+                                    std::string cmds[12] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER", "PONG"};
                                     std::string cmd = utils::strTrim(this->popers[this->pollfds[i].fd], "\r\n\t ");
                                     cmd = utils::getCmd(this->popers[this->pollfds[i].fd], ' ');
                                     cmd = utils::strTrim(cmd, "\r\n\t ");
                                     std::string value = utils::getValue(this->popers[this->pollfds[i].fd], ' ');
                                     value = utils::strTrim(value, "\r\n\t ");
                                     size_t l = 0;
-                                    for (; l < 11; l++)
+                                    for (; l < 12; l++)
                                         if (cmd == cmds[l]) break;
                                     switch (l)
                                     {
@@ -217,6 +217,8 @@ void Server::handleClients(int ServerSocket)
                                             break;
                                         case 10:
                                             utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
+                                            break;
+                                        case 11:
                                             break;
                                     default:
                                         utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", (*it)->getPrifex());

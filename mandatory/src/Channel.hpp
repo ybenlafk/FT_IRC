@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 11:34:12 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 18:23:51 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Channel
         int         limit;
     public:
         Channel(){}
-        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), topic_changeable(true), limit(INT_MAX) {}
+        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), invite_only(false), topic_changeable(true), limit(INT_MAX) {}
         ~Channel(){}
 
         void        add_client(Client client);

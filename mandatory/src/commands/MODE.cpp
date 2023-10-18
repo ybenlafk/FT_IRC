@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MODE.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 14:39:25 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 18:43:17 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,12 +130,13 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
                         target_channel->set_topic_changeable(true);
                         break;
                     case 'k':
-                        if (tab.size() == 4)
+                        if (tab.size() == 3)
                         {
                             target_channel->set_pw(true);
                             target_channel->set_key(target_nick);
                         }
-                        target_channel->set_pw(true);
+                        else
+                            utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex());
                         break;
                     case 'l':
                         if( check_int(target_nick, fd, sender) == 0)
@@ -150,7 +151,8 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
         }
     else if (target_mode[0] == '-')
     {
-        t = 0;
+        std::cout << "target_mode : " << target_mode << std::endl;
+        t = 1;
         while (target_mode[t])
         {
             if (target_mode[t] == 'i' || target_mode[t] == 'o' || target_mode[t] == 'k' || target_mode[t] == 't' || target_mode[t] == 'l')
@@ -162,7 +164,10 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
                         break;
                     case 'o':
                         if (tab.size() != 3)
-                            return utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex());
+                        {
+                            utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex());
+                            break;
+                        }
                         for (size_t i = 0; i < clients.size(); i++ )
                         {
                             if (clients[i]->getNickName() == target_nick)
@@ -183,10 +188,10 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
                                     }
                                 }
                                 else
-                                    return utils::reply(fd, "482 MODE :the user isn't present in the channel\r\n", sender->getPrifex());
+                                    utils::reply(fd, "482 MODE :the user isn't present in the channel\r\n", sender->getPrifex());
                             }
                             else
-                                return utils::reply(fd, "401 MODE :No such nick\r\n", sender->getPrifex());
+                                utils::reply(fd, "401 MODE :No such nick\r\n", sender->getPrifex());
                         }
                         break;
                     case 't':
@@ -194,6 +199,7 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
                         break;
                     case 'k':
                         target_channel->set_pw(false);
+                        target_channel->set_key("");
                         break;
                     case 'l':
                         target_channel->set_limit(INT_MAX);
@@ -201,7 +207,7 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
                 }
             }
             else
-                return utils::reply(fd, "472 MODE :is unknown mode char to me\r\n", sender->getPrifex());
+                utils::reply(fd, "472 MODE :is unknown mode char to me\r\n", sender->getPrifex());
             t++;
         }
     }
