@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+         #
+#    By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/22 20:41:53 by ybenlafk          #+#    #+#              #
-#    Updated: 2023/10/18 14:08:16 by sbadr            ###   ########.fr        #
+#    Updated: 2023/10/18 17:59:51 by ybenlafk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ OBJ= $(SRC:.cpp=.o)
 
 BOBJ= $(BSRC:.cpp=.o)
 
-CFLAGS= #-Wall -Wextra -Werror -std=c++98 -g 
+CFLAGS= -Wall -Wextra -Werror -std=c++98 
 
 all: $(NAME)
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   INVITE.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:10 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 15:02:11 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 18:01:13 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Channel* check_channel(map_channel &channels, std::string channel, int fd, Clien
     return NULL;
 }
 
-Client* check_client_fd(vec_client &clients, int fd, std::string cmd)
+Client* check_client_fd(vec_client &clients, int fd)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
@@ -54,7 +54,7 @@ Client* check_client_s(vec_client &clients, std::string user, int fd, Client *se
 void    Cmds::cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value)
 {
     std::vector<std::string> tab = split_it(value);
-    Client* sender = check_client_fd(clients, fd, "INVITE");
+    Client* sender = check_client_fd(clients, fd);
     if (tab.size() < 2)
         return utils::reply (fd, "461 INVITE :Not enough parameters\r\n",sender->getPrifex());
     Channel *channel = check_channel(channels, tab[1], fd, sender, "INVITE");

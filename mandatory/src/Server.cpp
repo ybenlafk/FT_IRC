@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 15:18:33 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 17:58:52 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,10 @@ int    Server::AddClient(std::string cmd, Client *client, int fd)
 {
     std::string pw, nick, user, tmp;
     pw = nick = user = "";
+    cmd = utils::strTrim(cmd, "\r\n\t ");
     tmp = utils::getCmd(cmd, ' ');
     
-    size_t j = 0;
-    for (j = 0; j < cmd.length(); j++) if (cmd[j] == ' ') break;
-    for (; j < cmd.length(); j++) pw += cmd[j];
-    pw = utils::strTrim(pw, "\r\n\t ");
+    pw = utils::getValue(cmd, ' ');
 
     if (tmp == "PASS")
     {
@@ -106,6 +104,7 @@ void Server::handleClients(int ServerSocket)
             if (this->pollfds[i].fd == ServerSocket)
             {
                 // Accept a client connection
+                std::cout << "\033[1;32m● Connecting...\033[0m" << std::endl;
                 sockaddr_in user_addr;
                 socklen_t user_len = sizeof(user_addr);
                 int clientSocket = accept(ServerSocket, reinterpret_cast<sockaddr*>(&user_addr), &user_len);
@@ -119,15 +118,12 @@ void Server::handleClients(int ServerSocket)
                 this->pollfds.push_back(pollfdClient);
                 this->popers[clientSocket] = "";
                 this->addrs[clientSocket] = user_addr;
-                
             }
             else
             {
                 char buffer[FD_SETSIZE];
                 std::memset(buffer, 0, FD_SETSIZE);
                 ssize_t bytesRead = recv(this->pollfds[i].fd, buffer, FD_SETSIZE - 1, 0);
-                // for (int p = 0; p < (int )buffers.size(); p++)
-                //     std::cout << buffers[p] << std::endl;
                 if (bytesRead < 0)
                 {
                     close(this->pollfds[i].fd);
@@ -136,10 +132,11 @@ void Server::handleClients(int ServerSocket)
                 }
                 else if (bytesRead == 0)
                 {
+                    close(this->pollfds[i].fd);
+                    this->pollfds.erase(this->pollfds.begin() + i);
                     Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels);
                     break;
                 }
-                buffer[bytesRead] = '\0';
                 fillBuffers(this->buffers, buffer);
                 if (bytesRead > 0)
                 {
@@ -170,9 +167,9 @@ void Server::handleClients(int ServerSocket)
                                         utils::ft_send(this->pollfds[i].fd, "433 * :Nickname is already in use\r\n");
                                     else if (res == 0 && (*it)->getAuth() == true)
                                     {
-                                        std::cout << "Client " << (*it)->getNickName() <<" connected" << std::endl;
+                                        std::cout << "\033[1;32m● Client " << (*it)->getNickName() <<" connected\033[0m" << std::endl;
                                         (*it)->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
-                                        utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to the Internet Relay Network\r\n", (*it)->getPrifex());
+                                        utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", (*it)->getPrifex());
                                     }
                                 }
                                 else if ((*it)->getAuth() == true)
@@ -241,7 +238,7 @@ void Server::handleClients(int ServerSocket)
 void    Server::run()
 {
     int    ServerSocket = utils::setUpServer(&this->clients, this->port);
-    std::cout << "\033[1;32m" << utils::getHostName() << "\033[0m" << std::endl;
+    std::cout << "\033[1;35m───────▷ The hostname : " << utils::getHostName() << "\033[0m" << std::endl;
     fcntl(ServerSocket, F_SETFL, O_NONBLOCK);
     struct pollfd pollfdServer;
     pollfdServer.fd = ServerSocket;

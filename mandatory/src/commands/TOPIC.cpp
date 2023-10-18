@@ -6,7 +6,7 @@
 /*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:30 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 19:25:56 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 19:31:48 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void    Cmds::cmdTopic(map_channel &channels, vec_client &clients, int fd, std::
     {
         std::cout << tab[i] << "."<< std::endl;
     }
-    Client* sender = check_client_fd(clients, fd, "TOPIC");
+    Client* sender = check_client_fd(clients, fd);
     if(!sender)
         return ;
     Channel *channel = check_channel(channels, tab[0], fd, sender, "TOPIC");

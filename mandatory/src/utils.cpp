@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 13:39:47 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 17:58:58 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ std::string utils::getValue(std::string str, char c)
     std::string value = "";
     int i = 0;
     while (str[i] && str[i] != c) i++;
-    i++;
+    if (str[i] == c) i++;
+    else return ("");
     while (str[i]) value += str[i++];
     return (utils::strTrim(value, " \t\r\n"));
 }
@@ -85,7 +86,7 @@ int     utils::setUpServer(vec_client *clients, int port)
 
     if (listen(ServerSocket, FD_SETSIZE) < 0)
         throw std::runtime_error("listen() failed");
-    std::cout << "Listening on port " << port << std::endl;
+    std::cout << "\033[1;36m──────────────▷ Irc server listening on port " << port <<"... ◁──────────────\033[0m" << std::endl;
     return (ServerSocket);
 }
 

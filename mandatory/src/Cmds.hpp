@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Cmds.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:40:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 14:44:06 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 18:01:44 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void    printChannels(map_channel &channels);
 bool    isClientExist(vec_member clients, int fd);
 bool    isJoined(Client &client, std::string &name);
 Channel* check_channel(map_channel &channels, std::string channel, int fd, Client *sender, std::string cmd);
-Client* check_client_fd(vec_client &clients, int fd, std::string cmd);
+Client* check_client_fd(vec_client &clients, int fd);
 Client* check_client_s(vec_client &clients, std::string user, int fd, Client *sender, std::string cmd);
 int check_opratotPrivilege(Client *sender, Channel *channel);
 
