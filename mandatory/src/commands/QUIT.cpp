@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:25 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 12:53:07 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/18 14:49:40 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void   Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &
     {
         if (clients[i]->getFd() == fd)
         {
-            std::cout << "Client " << clients[i]->getNickName() << " disconnected." << std::endl;
+            std::cout << "\033[1;31m● Client " << clients[i]->getNickName() << " disconnected.\033[0m" << std::endl;
             utils::ft_send(fd, "QUIT : " + msg + "\r\n");
             for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
             {
@@ -43,4 +43,5 @@ void   Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &
             return ;
         }
     }
+    std::cout << "\033[1;31m● Client disconnected.\033[0m" << std::endl;
 }
