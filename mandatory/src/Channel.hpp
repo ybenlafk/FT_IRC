@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 14:53:00 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/18 11:34:12 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class Channel
         ~Channel(){}
 
         void        add_client(Client client);
+        int         is_member(Client *client);
         
         void        set_name(std::string name);
         void        set_topic(std::string topic);

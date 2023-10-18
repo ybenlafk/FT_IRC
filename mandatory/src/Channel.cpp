@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:22 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 14:40:59 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/18 11:35:05 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,16 @@ bool        Channel::get_invite_only() const {return this->invite_only;}
 bool        Channel::get_topic_changeable() const {return this->topic_changeable;}
 
 int         Channel::get_limit() const {return this->limit;}
+
+int         Channel::is_member(Client *client)
+{
+    for (size_t i = 0; i < this->clients.size(); i++)
+    {
+        if (this->clients[i].getFd() == client->getFd())
+            return (1);
+    }
+    return (0);
+}
 
 std::string  Channel::get_members()
 {

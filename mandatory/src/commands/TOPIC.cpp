@@ -6,7 +6,7 @@
 /*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:30 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 22:14:43 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 16:16:10 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,76 +15,50 @@
 vec_str split_it_again(std::string tab)
 {
     int i = 0;
-    int c = 0;
-    vec_str res;
-
-    std::string tmp;
-    while (tab[i])
-    {
-        while (!isspace(tab[i]))
-            i++;
-        while (isprint(tab[i]) && !isspace(tab[i]))
-        {
-            c = 1;
-            tmp += tab[i];
-            i++;
-        }
-        if (c == 1)
-        {
-            res.push_back(tmp);
-            tmp.clear();
-            c = 0;
-        }
-        else if (c == 1 && tab[i] == ':')
-        {
-            while(tab[i])
-            {
-                tmp += tab[i];
-                i++;
-            }
-            res.push_back(tmp);
-        }
-    }
+    std::vector<std::string> res;
+    std::string word = "";
+    while(tab[i] && !isspace(tab[i]))
+        word += tab[i++];
+    res.push_back(word);
+    word.clear();
+    word = std::strchr(tab.c_str(), ':');
+    res.push_back(word);
+    return(res);
 }
 
 void    Cmds::cmdTopic(map_channel &channels, vec_client &clients, int fd, std::string value)
 {
-    vec_str tab;
-    Channel *target_channel;
-    Client *sender;
-    std::string channel;
-    std::string topic;
-    
-    tab = split_it_again(value);
-    channel = tab[0];
-    topic = tab[1];
-    for(size_t i = 0; i < clients.size(); i++)
+    std::vector<std::string> tab = split_it_again(value);
+    for (size_t i = 0; i < tab.size(); i++)
     {
-        if (clients[i]->getFd() == fd)
-            sender = clients[i];
+        std::cout << tab[i] << "."<< std::endl;
     }
-////////////////////////////// check size of tab//
+    Client* sender = check_client_fd(clients, fd, "TOPIC");
+    if(!sender)
+        return ;
+    Channel *channel = check_channel(channels, tab[0], fd, sender, "TOPIC");
+    // check if the channel exist ,
+    if (!channel)
+        return ;
+    if (check_opratotPrivilege(sender, channel) == 0 && channel->get_topic_changeable() == false)
+        return utils::reply(fd, "482 TOPIC :You're not channel operator\r\n", sender->getPrifex());
     if (tab.size() == 1)
-        return utils::reply(fd, "461 TOPIC :Not enough parameters\r\n", "");
-    else if (tab.size() > 2)
-        return utils::reply(fd, "461 TOPIC :Too many parameters\r\n", "");
-////////////////////////////// check channel and user operator privilige//
-    if (channels.find(channel) != channels.end())
     {
-        target_channel = channels[channel];
-        if (sender->getChannels().find(channel) != sender->getChannels().end())
-        {
-            if (sender->getChannels()[channel] == false && target_channel->get_topic_changeable() == false)
-                return utils::reply(fd, "482 MODE :You're not channel operator\r\n", sender->getPrifex());
-        }
-        else
-            return utils::reply(fd, "482 MODE :You're not in the channel\r\n", sender->getPrifex());//check//
+        if (channel->get_topic().empty())
+            return utils::reply(fd, "331 TOPIC :No topic is set\r\n", sender->getPrifex());
+        return utils::reply(fd, "332 "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex());
     }
     else
-        return utils::reply(fd, "407 MODE " + channel + " :No such channel\r\n", sender->getPrifex());
-//////////////////////////////   
-    if (target_channel->getTopic().empty())
-        utils::reply(fd, "331 TOPIC :No topic is set\r\n", "");
-    else
-        utils::reply(fd, "332 TOPIC " + chan->getName() + " :" + chan->getTopic() + "\r\n", "");
+    {
+        if(tab[1][0] == ':' && tab[1].length() > 1)
+        {
+            channel->set_topic(tab[1].substr(1));
+            return utils::reply(fd, "332 "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex());
+        }
+        else if (tab[1][0] == ':')
+        {
+            channel->set_topic("");
+            return utils::reply(fd, "332 "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex());
+        }
+    }
 }
