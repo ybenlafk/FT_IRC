@@ -6,7 +6,7 @@
 #    By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/22 20:41:53 by ybenlafk          #+#    #+#              #
-#    Updated: 2023/10/17 22:12:12 by ybenlafk         ###   ########.fr        #
+#    Updated: 2023/10/18 17:59:51 by ybenlafk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,7 +40,7 @@ OBJ= $(SRC:.cpp=.o)
 
 BOBJ= $(BSRC:.cpp=.o)
 
-CFLAGS= -Wall -Wextra -Werror -std=c++98
+CFLAGS= -Wall -Wextra -Werror -std=c++98 
 
 all: $(NAME)
 

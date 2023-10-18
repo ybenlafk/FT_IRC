@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 14:54:08 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/18 17:58:52 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,10 +201,10 @@ void Server::handleClients(int ServerSocket)
                                             Cmds::cmdKick(this->channels, clients, this->pollfds[i].fd, value);
                                             break;
                                         case 5:
-                                            // INVITE handler
+                                            Cmds::cmdInvite(this->channels, clients, this->pollfds[i].fd, value);
                                             break;
                                         case 6:
-                                            // TOPIC handler
+                                            Cmds::cmdTopic(this->channels, clients, this->pollfds[i].fd, value);
                                             break;
                                         case 7:
                                             Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels);

@@ -6,7 +6,7 @@
 /*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 14:29:31 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/18 14:39:25 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ int check_int(std::string tab, int fd, Client *sender)
             t++;
         else
         {
-            return 0;
             utils::reply(fd, "472 MODE :is unknown mode char to me\r\n", sender->getPrifex());   
+            return 0;
         }
     }
     return 1;
@@ -99,7 +99,6 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
                         target_channel->set_invite_only(true);
                         break;
                     case 'o':
-                        //looking for client I want to give operator privileges to
                         if (tab.size() != 3)
                             return utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex());
                         for (size_t i = 0; i < clients.size(); i++ )
