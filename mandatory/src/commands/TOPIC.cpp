@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   TOPIC.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:30 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 18:02:00 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/18 19:31:48 by sbadr            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@ vec_str split_it_again(std::string tab)
         word += tab[i++];
     res.push_back(word);
     word.clear();
-    word = std::strchr(tab.c_str(), ':');
-    res.push_back(word);
+    if (std::strchr(tab.c_str(), ':'))
+    {
+        word = std::strchr(tab.c_str(), ':');
+        res.push_back(word);
+    }
     return(res);
 }
 
