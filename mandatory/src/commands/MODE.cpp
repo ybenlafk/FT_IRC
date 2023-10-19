@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 11:20:51 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 15:40:28 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,8 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
         if (channels.find(channel_name) != channels.end())
         {
             target_channel = channels[channel_name];
+            std::cout << "======> " << target_channel->get_name() << std::endl;
+            std::cout << "======@ " << sender->getNickName() << std::endl;
             if (sender->getChannels().find(channel_name) != sender->getChannels().end())
             {
                 if (sender->getChannels()[channel_name] == false)

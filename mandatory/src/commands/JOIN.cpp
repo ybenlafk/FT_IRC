@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 11:59:09 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 15:46:15 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,9 @@ void    serv_reply(vec_str names, map_channel &channels, Client *client, size_t 
             utils::reply(channels[names[i]]->get_clients()[j].getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
     
     utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
-    utils::reply(client->getFd(), "332 " + client->getNickName() + " " + names[i] + " : " + channels[names[i]]->get_topic() + "\r\n", ":" + hostname);
-    utils::reply(client->getFd(), "353 " + client->getNickName() + " @ " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n", ":" + hostname);
-    utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", ":" + hostname);
+    utils::reply(client->getFd(), "332 " + client->getNickName() + " " + names[i] + " : " + channels[names[i]]->get_topic() + "\r\n", hostname);
+    utils::reply(client->getFd(), "353 " + client->getNickName() + " @ " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n", hostname);
+    utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", hostname);
 }
 
 bool    isValidChannel(map_channel &channels, vec_str names, Client *client, size_t i, std::string hostname)
@@ -97,8 +97,8 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                 channels[names[i]]->set_pw(false);
             }
             utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
-            utils::reply(client->getFd(), "353 " + client->getNickName() + " = " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n", ":" +  hostname);
-            utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", ":" + hostname);
+            utils::reply(client->getFd(), "353 " + client->getNickName() + " = " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n",  hostname);
+            utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", hostname);
         }
         else
         {
@@ -110,10 +110,12 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                     {
                         if (isValidChannel(channels, names, client, i, hostname))
                         {
-                            client->add_channel(names[i], false);
                             if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
+                            {
+                                client->add_channel(names[i], false);
                                 channels[names[i]]->add_client(*client);
-                            serv_reply(names, channels, client, i, hostname);
+                                serv_reply(names, channels, client, i, hostname);
+                            }
                         }
                     }
                     else
@@ -126,10 +128,12 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
             {
                 if (isValidChannel(channels, names, client, i, hostname))
                 {
-                    client->add_channel(names[i], false);
                     if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
+                    {
+                        client->add_channel(names[i], false);
                         channels[names[i]]->add_client(*client);
-                    serv_reply(names, channels, client, i, hostname);
+                        serv_reply(names, channels, client, i, hostname);
+                    }
                 }
             }
         }

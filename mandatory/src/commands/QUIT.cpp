@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:25 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:45:22 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 15:50:27 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void   Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &
                     if (channels.size() == 0)
                         break;
                 }
+                std::cout << "-----\n";
             }
             close(fd);
             clients.erase(clients.begin() + i);
