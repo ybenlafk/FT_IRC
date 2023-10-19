@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 18:23:51 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 12:04:00 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ class Channel
         bool        pw;
         bool        invite_only;
         bool        topic_changeable;
-        int         limit;
+        long long   limit;
     public:
         Channel(){}
         Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), invite_only(false), topic_changeable(true), limit(INT_MAX) {}
@@ -47,7 +47,7 @@ class Channel
         void        set_pw(bool pw);
         void        set_invite_only(bool invite_only);
         void        set_topic_changeable(bool topic_changeable);
-        void        set_limit(int limit);
+        void        set_limit(long long limit);
         
         vec_member &get_clients();
         std::string get_name() const;
@@ -57,7 +57,7 @@ class Channel
         bool        get_pw() const;
         bool        get_invite_only() const;
         bool        get_topic_changeable() const;
-        int         get_limit() const;
+        long long         get_limit() const;
 
         std::string get_members();
 };

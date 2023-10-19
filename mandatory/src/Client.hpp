@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:26:59 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/16 10:04:08 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:34:55 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ class Client
         std::string     getRealName() const;
         std::string     getIpAddr() const;
 
-        std::string      getPrifex();
+        std::string      getPrifex(std::string hostname);
+        std::string      getIp();
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 18:13:49 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:34:39 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,8 +79,12 @@ std::string    Client::getRealName() const {return (this->real_name);}
 
 std::string    Client::getIpAddr() const {return (this->ip_addr);}
 
-std::string   Client::getPrifex()
+std::string   Client::getPrifex(std::string hostname)
+{
+    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (hostname.empty() ? "" : "@" + hostname);
+}
+
+std::string   Client::getIp()
 {
     return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (this->getIpAddr().empty() ? "" : "@" + this->getIpAddr());
-    // return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (utils::getHostName().empty() ? "" : "@" + utils::getHostName());
 }

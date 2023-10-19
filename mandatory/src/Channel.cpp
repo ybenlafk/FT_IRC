@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sbadr <sbadr@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:22 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 11:35:05 by sbadr            ###   ########.fr       */
+/*   Updated: 2023/10/19 12:03:40 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void        Channel::set_invite_only(bool invite_only) {this->invite_only = invi
 
 void        Channel::set_topic_changeable(bool topic_changeable) {this->topic_changeable = topic_changeable;}
 
-void        Channel::set_limit(int limit) {this->limit = limit;}
+void        Channel::set_limit(long long limit) {this->limit = limit;}
 
 vec_member  &Channel::get_clients() {return this->clients;}
 
@@ -46,7 +46,7 @@ bool        Channel::get_invite_only() const {return this->invite_only;}
 
 bool        Channel::get_topic_changeable() const {return this->topic_changeable;}
 
-int         Channel::get_limit() const {return this->limit;}
+long long         Channel::get_limit() const {return this->limit;}
 
 int         Channel::is_member(Client *client)
 {

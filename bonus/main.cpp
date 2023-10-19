@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 21:39:33 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:00:07 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ std::vector<std::string> getFileNames(std::string file)
 {
     std::vector<std::string> res;
     std::ifstream ifs(file);
+    if (!ifs.is_open()) throw std::runtime_error("Error: " + file + " could not be opened.");
     std::string line;
     while (std::getline(ifs, line))
         res.push_back(line);
@@ -41,7 +42,8 @@ std::vector<std::string> getFileNames(std::string file)
 std::string getRandomSong(std::vector<std::string> files)
 {
     std::srand(std::time(NULL));
-    return (files[std::rand() % files.size()]);
+    int pos = std::rand() % files.size();
+    return (files[pos]);
 }
 
 void ft_send(int fd, std::string msg)
@@ -77,7 +79,15 @@ std::string getValue(std::string str, char c)
 void playMP3(const std::string& filePath)
 {
     std::string command = "open " + filePath;
-    system(command.c_str());
+    if (system(command.c_str()) == -1)
+        throw std::runtime_error("Error: " + filePath + " could not be opened.");
+}
+
+void stopMP3()
+{
+    std::string command = "kill $(pgrep -x Spotify)";
+    if (system(command.c_str()) == -1)
+        throw std::runtime_error("Error: " + command + " could not be executed.");
 }
 
 int main(int ac, char **av)
@@ -89,7 +99,7 @@ int main(int ac, char **av)
             std::string av1 = av[1];
             std::string host = av[2];
             std::string pw = av[3];
-            std::vector<std::string> files = getFileNames("./songs.config");
+            std::vector<std::string> files = getFileNames("bonus/songs.config");
             if (av1.empty() || host.empty() || pw.empty()) return (0);
             int port  = std::atoi(av1.c_str());
 
@@ -113,9 +123,9 @@ int main(int ac, char **av)
             while(true)
             {
                 char buffer[1024];
+                std::memset(buffer, 0, 1024);
                 int fd = recv(sock, buffer, 1023, 0);
                 if (fd < 0) continue;
-                buffer[fd] = '\0';
                 std::string msg = strTrim(buffer, " \t\r\n");
                 msg = getValue(msg, ':');
                 std::string song = getRandomSong(files);
@@ -124,6 +134,12 @@ int main(int ac, char **av)
                     playMP3(song);
                     std::system("clear");
                     std::cout << "\033[1;32m ♬ the song is playing... \033[0m" << std::endl;
+                }
+                else if (msg == "stop")
+                {
+                    stopMP3();
+                    std::system("clear");
+                    std::cout << "\033[1;31m ♬ the song is stopped... \033[0m" << std::endl;
                 }
                 else
                     ft_send(sock, "421 tchipa :Unknown command\r\n");

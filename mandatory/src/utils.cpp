@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 17:58:58 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:32:13 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,28 +142,29 @@ bool         utils::isValidName(std::string name)
 
 std::string utils::getHostName()
 {
-    if (std::system("uname -n > /tmp/hostname") == -1)
+    if (std::system("uname -n > /tmp/host.txt") == -1)
         throw std::runtime_error("system() failed");
-    std::ifstream file("/tmp/hostname");
+    std::ifstream file("/tmp/host.txt");
     if (!file.is_open())
         throw std::runtime_error("open() failed");
-    std::string hostname;
-    std::getline(file, hostname);
+    std::string res;
+    std::getline(file, res);
     file.close();
-    if (std::system("rm -rf /tmp/hostname") == -1)
+    if (std::system("rm -rf /tmp/host.txt") == -1)
         throw std::runtime_error("system() failed");
-    return (hostname);
+    return (res);
 }
 
 int    utils::split(std::string str, char c, vec_str *names, std::string *reason)
 {
     size_t i = 0;
-    std::string word;
+    std::string word = "";
 
     while (str[i] && str[i] != ' ' && str[i] != '\t' && str[i] != ':')
     {
         if (str[i] == c)
         {
+            word = utils::strTrim(word, " \t\r\n");
             names->push_back(word);
             word = "";
         }
@@ -177,9 +178,7 @@ int    utils::split(std::string str, char c, vec_str *names, std::string *reason
         return (0);
     word = "";
     while (str[i] && (str[i] == ' ' || str[i] == '\t')) i++;
-    if (str[i]  != ':')
-        return (0);
-    i++;
+    if (str[i] == ':') i++;
     while (str[i] && str[i] != '\r' && str[i] != '\n')
     {
         word += str[i];

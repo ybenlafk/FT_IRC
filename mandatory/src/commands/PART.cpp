@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:15 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/06 18:08:19 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:41:48 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void    removeFromChannel(map_channel &channels, int fd, std::string name, vec_c
     }
 }
 
-void    sendToMembers(map_channel &channels, int fd, std::string name, vec_client &clients)
+void    sendToMembers(map_channel &channels, int fd, std::string name, vec_client &clients, std::string hostname)
 {
     Client *client = NULL;
     
@@ -53,12 +53,12 @@ void    sendToMembers(map_channel &channels, int fd, std::string name, vec_clien
         for (size_t i = 0; i < channels[name]->get_clients().size(); i++)
         {
             if (channels[name]->get_clients()[i].getFd() != fd)
-                utils::reply(channels[name]->get_clients()[i].getFd(), "PART " + name + "\r\n", client->getPrifex());
+                utils::reply(channels[name]->get_clients()[i].getFd(), "PART " + name + "\r\n", client->getPrifex(hostname));
         }
     }
 }
 
-void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::string value)
+void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
@@ -70,7 +70,7 @@ void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::s
                 vec_str names;
                 if (utils::split(value, ',', &names, &reason) == 0)
                 {
-                    utils::reply(fd, "461 * PART :Not enough parameters\r\n", clients[i]->getPrifex());
+                    utils::reply(fd, "461 * PART :Not enough parameters\r\n", clients[i]->getPrifex(hostname));
                     return ;
                 }
                 for (size_t j = 0; j < names.size(); j++)
@@ -80,22 +80,22 @@ void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::s
                         if (isJoined(*clients[i], names[j]))
                         {
                             if (reason.empty())
-                                utils::reply(fd, "PART " + names[j] + "\r\n", clients[i]->getPrifex());
+                                utils::reply(fd, "PART " + names[j] + "\r\n", clients[i]->getPrifex(hostname));
                             else
-                                utils::reply(fd, "PART " + names[j] + " :" + reason + "\r\n", clients[i]->getPrifex());
+                                utils::reply(fd, "PART " + names[j] + " :" + reason + "\r\n", clients[i]->getPrifex(hostname));
                             clients[i]->getChannels().erase(names[j]);
                             removeFromChannel(channels, fd, names[j], clients);
-                            sendToMembers(channels, fd, names[j], clients);
+                            sendToMembers(channels, fd, names[j], clients, hostname);
                             printChannels(channels);
                             for (size_t l = 0; l < clients.size(); l++)
                                 for (m_channel::iterator it = clients[l]->getChannels().begin(); it != clients[l]->getChannels().end(); it++)
                                     std::cout << "name : " << it->first << " admin : " << (it->second ? "(true)" : "(false)") << std::endl;
                         }
                         else
-                            utils::reply(fd, "442 * " + names[j] + " :You're not on that channel\r\n", clients[i]->getPrifex());
+                            utils::reply(fd, "442 * " + names[j] + " :You're not on that channel\r\n", clients[i]->getPrifex(hostname));
                     }
                     else
-                        utils::reply(fd, "403 * " + names[j] + " :No such channel\r\n", clients[i]->getPrifex());
+                        utils::reply(fd, "403 * " + names[j] + " :No such channel\r\n", clients[i]->getPrifex(hostname));
                 }
             }
         }

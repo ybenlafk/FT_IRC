@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:48 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 18:31:01 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:53:01 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ bool    isOperator(vec_client &clients, int fd, std::string name)
     return (false);
 }
 
-void    Cmds::cmdKick(map_channel &channels, vec_client &clients, int fd, std::string value)
+void    Cmds::cmdKick(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
 {
     vec_str params = getParams(value);
     Client *client = utils::getClientByFd(fd, clients);
@@ -89,17 +89,17 @@ void    Cmds::cmdKick(map_channel &channels, vec_client &clients, int fd, std::s
     }
     if (params.size() != 3)
     {
-        utils::reply(fd, "461 KICK :Not enough parameters\r\n", client->getPrifex());
+        utils::reply(fd, "461 KICK :Not enough parameters\r\n", client->getPrifex(hostname));
         return ;
     }
     if (params[0] == "" || params[1] == "")
     {
-        utils::reply(fd, "461 KICK :Not enough parameters\r\n", client->getPrifex());
+        utils::reply(fd, "461 KICK :Not enough parameters\r\n", client->getPrifex(hostname));
         return ;
     }
     if (channels.find(params[0]) == channels.end())
     {
-        utils::reply(fd, "403 KICK :No such channel\r\n", client->getPrifex());
+        utils::reply(fd, "403 KICK :No such channel\r\n", client->getPrifex(hostname));
         return ;
     }
     else
@@ -108,9 +108,9 @@ void    Cmds::cmdKick(map_channel &channels, vec_client &clients, int fd, std::s
         {
             std::cout << "KICK" << std::endl;
             removeFromChannel(channels, params[1], params[0], clients);
-            utils::reply(fd, "KICK " + params[0] + " " + params[1] + " :" + client->getNickName() + "\r\n", client->getPrifex());
+            utils::reply(fd, "KICK " + params[0] + " " + params[1] + " :" + client->getNickName() + "\r\n", client->getPrifex(hostname));
         }
         else
-            utils::reply(fd, "482 KICK :You're not a channel operator\r\n", client->getPrifex());
+            utils::reply(fd, "482 KICK :You're not a channel operator\r\n", client->getPrifex(hostname));
     }
 }

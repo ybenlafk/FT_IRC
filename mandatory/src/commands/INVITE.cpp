@@ -6,17 +6,17 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:10 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 18:01:13 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:40:01 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Cmds.hpp"
 
-Channel* check_channel(map_channel &channels, std::string channel, int fd, Client *sender, std::string cmd)
+Channel* check_channel(map_channel &channels, std::string channel, int fd, Client *sender, std::string cmd, std::string hostname)
 {
     if (channels.find(channel) != channels.end())
         return channels[channel];
-    utils::reply(fd, "403 "+cmd+ " :No such channel\r\n", sender->getPrifex());
+    utils::reply(fd, "403 "+cmd+ " :No such channel\r\n", sender->getPrifex(hostname));
     return NULL;
 }
 
@@ -40,39 +40,39 @@ int check_opratotPrivilege(Client *sender, Channel *channel)
     return 0;
 }
 
-Client* check_client_s(vec_client &clients, std::string user, int fd, Client *sender, std::string cmd)
+Client* check_client_s(vec_client &clients, std::string user, int fd, Client *sender, std::string cmd, std::string hostname)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
         if (clients[i]->getNickName() == user)
             return clients[i];
     }
-    utils::reply(fd, "401 " + cmd + " :No such nick/channel\r\n", sender->getPrifex());
+    utils::reply(fd, "401 " + cmd + " :No such nick/channel\r\n", sender->getPrifex(hostname));
     return NULL;
 }
 
-void    Cmds::cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value)
+void    Cmds::cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
 {
     std::vector<std::string> tab = split_it(value);
     Client* sender = check_client_fd(clients, fd);
     if (tab.size() < 2)
-        return utils::reply (fd, "461 INVITE :Not enough parameters\r\n",sender->getPrifex());
-    Channel *channel = check_channel(channels, tab[1], fd, sender, "INVITE");
-    Client* user = check_client_s(clients, tab[0], fd, sender, "INVITE");
+        return utils::reply (fd, "461 INVITE :Not enough parameters\r\n",sender->getPrifex(hostname));
+    Channel *channel = check_channel(channels, tab[1], fd, sender, "INVITE", hostname);
+    Client* user = check_client_s(clients, tab[0], fd, sender, "INVITE", hostname);
     // check if the channel exist ,
     if (!channel || !user)
         return ;
     if (check_opratotPrivilege(sender, channel) == 0)
-        return utils::reply(fd, "482 INVITE :You're not channel operator\r\n", sender->getPrifex());
+        return utils::reply(fd, "482 INVITE :You're not channel operator\r\n", sender->getPrifex(hostname));
     //  check if the user is in the channel and the invited client isn't
     if (channel->is_member(sender))
     {
         if (channel->is_member(user))
-            return utils::reply(fd, "443 INVITE :is already on channel\r\n", sender->getPrifex());
+            return utils::reply(fd, "443 INVITE :is already on channel\r\n", sender->getPrifex(hostname));
         else
         {
-            utils::reply(fd, "341 INVITE :is invited to the channel\r\n", sender->getPrifex());
-            utils::reply(user->getFd(), "341 INVITE :is invited to the channel\r\n", sender->getPrifex());
+            utils::reply(fd, "341 INVITE :is invited to the channel\r\n", sender->getPrifex(hostname));
+            utils::reply(user->getFd(), "341 INVITE :is invited to the channel\r\n", sender->getPrifex(hostname));
             user->add_channel(tab[0], false);
             channel->add_client(*user);
         }

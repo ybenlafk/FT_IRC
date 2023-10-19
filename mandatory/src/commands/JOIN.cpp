@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/16 09:32:18 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 11:59:09 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,32 +41,33 @@ bool    isClientExist(vec_member clients, int fd)
     return (true);
 }
 
-void    serv_reply(vec_str names, map_channel &channels, Client *client, size_t i)
+void    serv_reply(vec_str names, map_channel &channels, Client *client, size_t i, std::string hostname)
 {
-    utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getPrifex());
-    utils::reply(client->getFd(), "332 " + names[i] + " : " + channels[names[i]]->get_topic() + "\r\n", client->getPrifex());
-    utils::reply(client->getFd(), "353 " + names[i] + " = " + client->getNickName() + " :" + channels[names[i]]->get_members() + "\r\n", client->getPrifex());
-    utils::reply(client->getFd(), "366 " + names[i] + " :End of /NAMES list\r\n", client->getPrifex());
     for (size_t j = 0; j < channels[names[i]]->get_clients().size(); j++)
         if (channels[names[i]]->get_clients()[j].getNickName() != client->getNickName())
-            utils::reply(channels[names[i]]->get_clients()[j].getFd(), "JOIN :" + names[i] + "\r\n", client->getPrifex());
+            utils::reply(channels[names[i]]->get_clients()[j].getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
+    
+    utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
+    utils::reply(client->getFd(), "332 " + client->getNickName() + " " + names[i] + " : " + channels[names[i]]->get_topic() + "\r\n", ":" + hostname);
+    utils::reply(client->getFd(), "353 " + client->getNickName() + " @ " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n", ":" + hostname);
+    utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", ":" + hostname);
 }
 
-bool    isValidChannel(map_channel &channels, vec_str names, Client *client, size_t i)
+bool    isValidChannel(map_channel &channels, vec_str names, Client *client, size_t i, std::string hostname)
 {
     if (!channels[names[i]]->get_invite_only())
     {
         if (channels[names[i]]->get_clients().size() < (size_t)channels[names[i]]->get_limit())
             return (true);
         else
-            return (utils::reply(client->getFd(), "471 * " + names[i] + " :Cannot join channel (+l)\r\n", client->getPrifex()), false);
+            return (utils::reply(client->getFd(), "471 * " + names[i] + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);
     }
     else
-        return (utils::reply(client->getFd(), "473 * " + names[i] + " :Cannot join channel (+i)\r\n", client->getPrifex()), false);
+        return (utils::reply(client->getFd(), "473 * " + names[i] + " :Cannot join channel (+i)\r\n", client->getPrifex(hostname)), false);
     return (false);
 }
 
-void          parseJoin(std::string value, map_channel &channels, Client *client)
+void          parseJoin(std::string value, map_channel &channels, Client *client, std::string hostname)
 {
     vec_str  names;
     vec_str  keys;
@@ -76,7 +77,7 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
     {
         if (!utils::isValidName(names[i]))
         {
-            utils::reply(client->getFd(), "403 * " + names[i] + " :No such channel\r\n", client->getPrifex());
+            utils::reply(client->getFd(), "403 * " + names[i] + " :No such channel\r\n", client->getPrifex(hostname));
             continue ;
         }
         if (channels.find(names[i]) == channels.end())
@@ -95,9 +96,9 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                 channels[names[i]]->add_client(*client);
                 channels[names[i]]->set_pw(false);
             }
-            utils::reply(client->getFd(), "353 " + client->getNickName() + " = " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n", client->getPrifex());
-            utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list.\r\n", client->getPrifex());
-            utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getPrifex());
+            utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
+            utils::reply(client->getFd(), "353 " + client->getNickName() + " = " + names[i] + " :" + channels[names[i]]->get_members() + "\r\n", ":" +  hostname);
+            utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", ":" + hostname);
         }
         else
         {
@@ -107,35 +108,35 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                 {
                     if (channels[names[i]]->get_key() == keys[i])
                     {
-                        if (isValidChannel(channels, names, client, i))
+                        if (isValidChannel(channels, names, client, i, hostname))
                         {
                             client->add_channel(names[i], false);
                             if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
                                 channels[names[i]]->add_client(*client);
-                            serv_reply(names, channels, client, i);
+                            serv_reply(names, channels, client, i, hostname);
                         }
                     }
                     else
-                        utils::reply(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", client->getPrifex());
+                        utils::reply(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", client->getPrifex(hostname));
                 }
                 else
-                    utils::reply(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", client->getPrifex());
+                    utils::reply(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", client->getPrifex(hostname));
             }
             else
             {
-                if (isValidChannel(channels, names, client, i))
+                if (isValidChannel(channels, names, client, i, hostname))
                 {
                     client->add_channel(names[i], false);
                     if (isClientExist(channels[names[i]]->get_clients(), client->getFd()))
                         channels[names[i]]->add_client(*client);
-                    serv_reply(names, channels, client, i);
+                    serv_reply(names, channels, client, i, hostname);
                 }
             }
         }
     }
 }
 
-void    Cmds::cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value)
+void    Cmds::cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
@@ -143,7 +144,7 @@ void    Cmds::cmdJoin(map_channel &channels, vec_client &clients, int fd, std::s
         {
             if (clients[i]->getAuth())
             {
-                parseJoin(value, channels, clients[i]);
+                parseJoin(value, channels, clients[i], hostname);
                 printChannels(channels);
             }
         }

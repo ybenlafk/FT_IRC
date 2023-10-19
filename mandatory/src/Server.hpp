@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/17 22:11:23 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:33:32 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef std::map<std::string, Channel*> map_channel;
 class Server
 {
     public:
+        std::string hostname;
         int         port;
         std::string password;
         vec_client  clients;

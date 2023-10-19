@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/18 20:25:37 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 10:55:38 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ void Server::handleClients(int ServerSocket)
                 {
                     close(this->pollfds[i].fd);
                     this->pollfds.erase(this->pollfds.begin() + i);
-                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels);
+                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels, hostname);
                     break;
                 }
                 fillBuffers(this->buffers, buffer);
@@ -143,7 +143,7 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
+                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)
@@ -169,7 +169,7 @@ void Server::handleClients(int ServerSocket)
                                     {
                                         std::cout << "\033[1;32m● Client " << (*it)->getNickName() <<" connected\033[0m" << std::endl;
                                         (*it)->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
-                                        utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", (*it)->getPrifex());
+                                        utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", (*it)->getPrifex(hostname));
                                     }
                                 }
                                 else if ((*it)->getAuth() == true)
@@ -186,42 +186,42 @@ void Server::handleClients(int ServerSocket)
                                     switch (l)
                                     {
                                         case 0:
-                                            Cmds::cmdNick(clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdNick(clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 1:
-                                            Cmds::cmdJoin(this->channels, clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdJoin(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 2:
-                                            Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 3:
-                                            Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels);
+                                            Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels, hostname);
                                             break;
                                         case 4:
-                                            Cmds::cmdKick(this->channels, clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdKick(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 5:
-                                            Cmds::cmdInvite(this->channels, clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdInvite(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 6:
-                                            Cmds::cmdTopic(this->channels, clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdTopic(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 7:
-                                            Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels);
+                                            Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels, hostname);
                                             break;
                                         case 8:
-                                            Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value);
+                                            Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 9:
-                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
+                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex(hostname));
                                             break;
                                         case 10:
-                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex());
+                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex(hostname));
                                             break;
                                         case 11:
                                             break;
                                     default:
-                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", (*it)->getPrifex());
+                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", (*it)->getPrifex(hostname));
                                         break;
                                     }
                                 }
@@ -239,8 +239,9 @@ void Server::handleClients(int ServerSocket)
 
 void    Server::run()
 {
+    hostname = utils::getHostName();
     int    ServerSocket = utils::setUpServer(&this->clients, this->port);
-    std::cout << "\033[1;35m───────▷ The hostname : " << utils::getHostName() << "\033[0m" << std::endl;
+    std::cout << "\033[1;35m───────▷ The hostname : " << hostname << "\033[0m" << std::endl;
     fcntl(ServerSocket, F_SETFL, O_NONBLOCK);
     struct pollfd pollfdServer;
     pollfdServer.fd = ServerSocket;
