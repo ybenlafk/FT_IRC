@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:32:13 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:29:46 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,11 @@ Client *utils::getClientByFd(int fd, vec_client clients)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i]->getFd() == fd)
-            return (clients[i]);
+        if (clients[i].getFd() == fd)
+        {
+            Client *res = &clients[i];
+            return (res);
+        }
     }
     return (NULL);
 }
@@ -66,7 +69,7 @@ void         utils::spaceSkipe(std::string &str)
 int     utils::setUpServer(vec_client *clients, int port)
 {
     int    ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-    clients->push_back(new Client(-1, "", "", "", false));
+    clients->push_back(Client(-1, "", "", "", false));
     if (ServerSocket < 0)
         throw std::runtime_error("socket() failed");
 

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:41:48 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:27:05 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:13:45 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ bool ParseInput(std::string port, std::string pw)
             return (false);
     return (true);
 }
-
 int main(int ac, char **av)
 {
     if (ac != 3)

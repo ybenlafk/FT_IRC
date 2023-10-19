@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:44:08 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:33:32 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:35:17 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 # include "utils.hpp"
 # include "Cmds.hpp"
 # include "Channel.hpp"
-
-typedef std::map<std::string, Channel*> map_channel;
 
 class Server
 {

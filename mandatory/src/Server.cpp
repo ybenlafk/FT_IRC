@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 15:34:32 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:20:06 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,12 @@ int    Server::AddClient(std::string cmd, Client *client, int fd)
     {
         for (vec_client::iterator tt = clients.begin(); tt != clients.end(); tt++)
         {
-            if ((*tt)->getFd() == fd)
+            if (tt->getFd() == fd)
             {
-                if ((*tt)->getPw() == false)
+                if (tt->getPw() == false)
                 {
                     if (pw != password) return (1);
-                    else (*tt)->setPw(true);
+                    else tt->setPw(true);
                 }
             }
         }
@@ -63,7 +63,7 @@ int    Server::AddClient(std::string cmd, Client *client, int fd)
     else if (tmp == "NICK")
     {
         for (vec_client::iterator it = clients.begin(); it != clients.end(); it++)
-            if (pw == (*it)->getNickName() && (*it)->getFd() != fd)
+            if (pw == it->getNickName() && it->getFd() != fd)
                 return (2);
         client->setNickName(pw);
     }
@@ -77,7 +77,7 @@ int    Server::AddClient(std::string cmd, Client *client, int fd)
 bool    isExist(vec_client clients, int fd)
 {
     for (size_t i = 0; i < clients.size(); i++)
-        if (clients[i]->getFd() == fd)
+        if (clients[i].getFd() == fd)
             return (false);
     return (true);
 }
@@ -143,7 +143,7 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
+                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)
@@ -152,27 +152,27 @@ void Server::handleClients(int ServerSocket)
                             continue;
                         }
                         if (isExist(this->clients, this->pollfds[i].fd))
-                            clients.push_back(new Client(this->pollfds[i].fd, "", "", "", false));
+                            clients.push_back(Client(this->pollfds[i].fd, "", "", "", false));
                         vec_client::iterator it = clients.begin();
                         for (; it != clients.end(); it++)
                         {
-                            if ((*it)->getFd() == this->pollfds[i].fd)
+                            if (it->getFd() == this->pollfds[i].fd)
                             {
-                                if ((*it)->getAuth() == false)
+                                if (it->getAuth() == false)
                                 {
-                                    int res = AddClient(this->popers[this->pollfds[i].fd], *it, this->pollfds[i].fd);
+                                    int res = AddClient(this->popers[this->pollfds[i].fd], &(*it), this->pollfds[i].fd);
                                     if (res == 1)
                                         utils::ft_send(this->pollfds[i].fd, "464 * :Password incorrect\r\n");
                                     else if (res == 2)
                                         utils::ft_send(this->pollfds[i].fd, "433 * :Nickname is already in use\r\n");
-                                    else if (res == 0 && (*it)->getAuth() == true)
+                                    else if (res == 0 && it->getAuth() == true)
                                     {
-                                        std::cout << "\033[1;32m● Client " << (*it)->getNickName() <<" connected\033[0m" << std::endl;
-                                        (*it)->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
-                                        utils::reply(this->pollfds[i].fd, "001 " +(*it)->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", (*it)->getPrifex(hostname));
+                                        std::cout << "\033[1;32m● Client " << it->getNickName() <<" connected\033[0m" << std::endl;
+                                        it->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
+                                        utils::reply(this->pollfds[i].fd, "001 " + it->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", it->getPrifex(hostname));
                                     }
                                 }
-                                else if ((*it)->getAuth() == true)
+                                else if (it->getAuth() == true)
                                 {
                                     std::string cmds[12] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER", "PONG"};
                                     std::string cmd = utils::strTrim(this->popers[this->pollfds[i].fd], "\r\n\t ");
@@ -213,15 +213,15 @@ void Server::handleClients(int ServerSocket)
                                             Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value, hostname);
                                             break;
                                         case 9:
-                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex(hostname));
+                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));
                                             break;
                                         case 10:
-                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", (*it)->getPrifex(hostname));
+                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));
                                             break;
                                         case 11:
                                             break;
                                     default:
-                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", (*it)->getPrifex(hostname));
+                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", it->getPrifex(hostname));
                                         break;
                                     }
                                 }

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:21 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:45:51 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:39:49 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
     {
         if (channels.find(target) != channels.end())
         {
-            Channel *chan = channels[target];
+            Channel *chan = &channels[target];
             for (size_t i = 0; i < chan->get_clients().size(); i++)
             {
                 if (chan->get_clients()[i].getFd() != fd && isJoined(chan->get_clients()[i], target))
@@ -64,12 +64,12 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
     {
         for (size_t i = 0; i < clients.size(); i++)
         {
-            if (clients[i]->getNickName() == target)
+            if (clients[i].getNickName() == target)
             {
-                if (clients[i]->getAuth())
+                if (clients[i].getAuth())
                 {
                     msg = utils::strTrim(msg, "\r\n\t: ");
-                    utils::reply(clients[i]->getFd(), "PRIVMSG " + target + " :" + msg + "\r\n", client->getPrifex(hostname));
+                    utils::reply(clients[i].getFd(), "PRIVMSG " + target + " :" + msg + "\r\n", client->getPrifex(hostname));
                     return ;
                 }
                 else

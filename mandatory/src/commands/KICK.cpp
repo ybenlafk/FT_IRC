@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:48 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:53:01 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:38:31 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,23 @@ void    removeFromChannel(map_channel &channels, std::string nick, std::string n
 {
     for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
         if (it->first == name)
-            for (size_t j = 0; j < it->second->get_clients().size(); j++)
-                if (it->second->get_clients()[j].getNickName() == nick)
-                    it->second->get_clients().erase(it->second->get_clients().begin() + j);
+            for (size_t j = 0; j < it->second.get_clients().size(); j++)
+                if (it->second.get_clients()[j].getNickName() == nick)
+                    it->second.get_clients().erase(it->second.get_clients().begin() + j);
     for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
     {
-       if (it->second->get_clients().size() == 0)
+       if (it->second.get_clients().size() == 0)
        {
-           delete it->second;
            channels.erase(it);
            break;
        }
     }
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i]->getNickName() == nick)
+        if (clients[i].getNickName() == nick)
         {
-            if (clients[i]->getChannels().find(name) != clients[i]->getChannels().end())
-                clients[i]->getChannels().erase(name);
+            if (clients[i].getChannels().find(name) != clients[i].getChannels().end())
+                clients[i].getChannels().erase(name);
         }
     }
 }
@@ -66,11 +65,11 @@ bool    isOperator(vec_client &clients, int fd, std::string name)
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i]->getFd() == fd)
+        if (clients[i].getFd() == fd)
         {
-            if (clients[i]->getChannels().find(name) != clients[i]->getChannels().end())
+            if (clients[i].getChannels().find(name) != clients[i].getChannels().end())
             {
-                if (clients[i]->getChannels()[name])
+                if (clients[i].getChannels()[name])
                     return (true);
             }
         }

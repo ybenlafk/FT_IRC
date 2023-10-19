@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:25 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 15:50:27 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 16:40:05 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,28 +16,27 @@ void   Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &
 {
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i]->getFd() == fd)
+        if (clients[i].getFd() == fd)
         {
-            std::cout << "\033[1;31m● Client " << clients[i]->getNickName() << " disconnected.\033[0m" << std::endl;
-            utils::reply(fd, "QUIT :" + msg + "\r\n", clients[i]->getPrifex(hostname));
+            std::cout << "\033[1;31m● Client " << clients[i].getNickName() << " disconnected.\033[0m" << std::endl;
+            utils::reply(fd, "QUIT :" + msg + "\r\n", clients[i].getPrifex(hostname));
             for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
             {
-                for (size_t j = 0; j < it->second->get_clients().size(); j++)
+                std::cout << "channel : " << it->first << std::endl;
+                for (size_t j = 0; j < it->second.get_clients().size(); j++)
                 {
-                    if (it->second->get_clients()[j].getFd() == fd)
+                    if (it->second.get_clients()[j].getFd() == fd)
                     {
-                        it->second->get_clients().erase(it->second->get_clients().begin() + j);
+                        it->second.get_clients().erase(it->second.get_clients().begin() + j);
                         break ;
                     }
                 }
-                if (it->second->get_clients().size() == 0)
+                if (it->second.get_clients().size() == 0)
                 {
-                    delete it->second;
                     channels.erase(it);
                     if (channels.size() == 0)
                         break;
                 }
-                std::cout << "-----\n";
             }
             close(fd);
             clients.erase(clients.begin() + i);
