@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:00:07 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 22:09:00 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ int main(int ac, char **av)
             add.sin_port = htons(port);
 
             if (connect(sock, (struct sockaddr *)&add, sizeof(add)) == -1) return (0);
-            fcntl(sock, F_SETFL, O_NONBLOCK);
+            if (fcntl(sock, F_SETFL, O_NONBLOCK) == -1) throw std::runtime_error("Error: fcntl failed.");
             std::string nick = "tchipa";
             ft_send(sock, "PASS " + pw + "\r\n");
             ft_send(sock, "NICK " + nick + "\r\n");

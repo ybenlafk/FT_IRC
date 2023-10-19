@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:20:06 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 22:08:24 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,8 @@ void Server::handleClients(int ServerSocket)
                 int clientSocket = accept(ServerSocket, reinterpret_cast<sockaddr*>(&user_addr), &user_len);
                 if (clientSocket < 0)
                     throw std::runtime_error("accept() failed");
-                fcntl(ServerSocket, F_SETFL, O_NONBLOCK);
+                if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
+                    throw std::runtime_error("fcntl() failed");
                 struct pollfd pollfdClient;
                 pollfdClient.fd = clientSocket;
                 pollfdClient.events = POLLIN;
@@ -132,9 +133,9 @@ void Server::handleClients(int ServerSocket)
                 }
                 else if (bytesRead == 0)
                 {
+                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels, hostname);
                     close(this->pollfds[i].fd);
                     this->pollfds.erase(this->pollfds.begin() + i);
-                    Cmds::cmdQuit(this->clients, this->pollfds[i].fd, "client disconnected", this->channels, hostname);
                     break;
                 }
                 fillBuffers(this->buffers, buffer);
@@ -242,7 +243,8 @@ void    Server::run()
     hostname = utils::getHostName();
     int    ServerSocket = utils::setUpServer(&this->clients, this->port);
     std::cout << "\033[1;35m───────▷ The hostname : " << hostname << "\033[0m" << std::endl;
-    fcntl(ServerSocket, F_SETFL, O_NONBLOCK);
+    if (fcntl(ServerSocket, F_SETFL, O_NONBLOCK) < 0)
+        throw std::runtime_error("fcntl() failed");
     struct pollfd pollfdServer;
     pollfdServer.fd = ServerSocket;
     pollfdServer.events = POLLIN;

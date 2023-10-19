@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:21 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:39:49 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/19 22:17:08 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,9 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
     if (!client)
         return ;
     int i = 0;
-    while (value[i] && value[i] != ':')
+    while (value[i] && value[i] != ':' && value[i] != ' ' && value[i] != '\t' && value[i] != '\r' && value[i] != '\n')
         target += value[i++];
-    if (value[i] == ':')
-        i++;
-    else
-    {
-        utils::ft_send(fd, "412 * :No message to send\r\n");
-        return ;
-    }
+    while (value[i] == ':') i++;
     target = utils::strTrim(target, "\r\n\t ");
     while (value[i])
         msg += value[i++];
