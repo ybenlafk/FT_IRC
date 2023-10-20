@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:38:52 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 15:22:53 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,14 @@ int check_int(std::string tab, int fd, Client *sender, std::string hostname)
     {
         if (isdigit(tab[t]))
             t++;
-        else
-        {
-            utils::reply(fd, "472 :is unknown mode char to me\r\n", sender->getPrifex(hostname));   
-            return 0;
-        }
+        else 
+            return (utils::reply(fd, "461 MODE :Invalid parameter\r\n", sender->getPrifex(hostname)), 0);
     }
     return 1;
 }
 
 int    setMode(std::string target_mode, std::string target_nick, Channel *target_channel,\
-        int fd, Client *sender, std::string hostname, vec_client clients, \
+        int fd, Client *sender, std::string hostname, vec_client &clients, \
         std::string channel_name, std::vector<std::string> tab)
 {
     long long limit;
@@ -62,7 +59,7 @@ int    setMode(std::string target_mode, std::string target_nick, Channel *target
         {
             case 'i':
                 target_channel->set_invite_only(true);
-                utils::reply(fd, "324 MODE :+i\r\n", sender->getPrifex(hostname));
+                utils::reply(fd, "MODE " + channel_name + ":+i\r\n", sender->getPrifex(hostname));
                 break;
             case 'o':
                 if (tab.size() != 3)
@@ -84,51 +81,56 @@ int    setMode(std::string target_mode, std::string target_nick, Channel *target
                                     if (target_channel->get_clients()[j].getNickName() == target_nick)
                                     {
                                         target_channel->get_clients()[j].getChannels()[channel_name] = true;
-                                        utils::reply(fd, "324 MODE :+o\r\n", sender->getPrifex(hostname));
+                                        utils::reply(fd, "MODE : +o\r\n", sender->getPrifex(hostname));
                                         break;
                                     }
                                 }
                             }
                         }
                         else
-                            utils::reply(fd, "482 :the user isn't present in the channel\r\n", sender->getPrifex(hostname));
+                            utils::reply(fd, "482 MODE :the user isn't present in the channel\r\n", sender->getPrifex(hostname));
                     }
-                    else
-                        utils::reply(fd, "401 :No such nick\r\n", sender->getPrifex(hostname));
                 }
                 break;
             case 't':
                 target_channel->set_topic_changeable(true);
-                utils::reply(fd, "324 MODE :+t\r\n", sender->getPrifex(hostname));
+                utils::reply(fd, "MODE " + channel_name + ": +t\r\n", sender->getPrifex(hostname));
                 break;
             case 'k':
                 if (tab.size() == 3)
                 {
                     target_channel->set_pw(true);
                     target_channel->set_key(target_nick);
-                    utils::reply(fd, "324 MODE :+k\r\n", sender->getPrifex(hostname));
+                    utils::reply(fd, "MODE " + channel_name + ": +k\r\n", sender->getPrifex(hostname));
                 }
                 else
-                    utils::reply(fd, "461 :Not enough parameters\r\n", sender->getPrifex(hostname));
+                    utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex(hostname));
                 break;
             case 'l':
-                if(check_int(target_nick, fd, sender, hostname) == 0)
-                    return (0);
-                std::istringstream(target_nick) >> limit;
-                target_channel->set_limit(limit);
-                utils::reply(fd, "324 MODE :+l\r\n", sender->getPrifex(hostname));
+                if (tab.size() == 3)
+                {
+                    if(check_int(target_nick, fd, sender, hostname) == 0)
+                        return (0);
+                    std::istringstream(target_nick) >> limit;
+                    if (limit <= 0)
+                        return (utils::reply(fd, "461 MODE :Invalid parameter\r\n", sender->getPrifex(hostname)), 0);
+                    target_channel->set_limit(limit);
+                    utils::reply(fd, "MODE " + channel_name + ": +l\r\n", sender->getPrifex(hostname));
+                }
+                else
+                    utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex(hostname));
                 break;
         }
     }
     else
         utils::reply(fd, "472 i :is unknown mode char to me\r\n", sender->getPrifex(hostname));
     if (modes.length() != 1)
-        utils::reply(fd, "MODE " + channel_name + " " + modes + "\r\n", sender->getPrifex(hostname));
+        target_channel->set_mode(modes);
     return (1);
 }
 
 int unsetMode(std::string target_mode, std::string target_nick, Channel *target_channel,\
-        int fd, Client *sender, std::string hostname, vec_client clients, \
+        int fd, Client *sender, std::string hostname, vec_client &clients, \
         std::string channel_name, std::vector<std::string> tab)
 {
     std::string modes = "-";
@@ -146,7 +148,7 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
                 case 'o':
                     if (tab.size() != 3)
                     {
-                        utils::reply(fd, "461 :Not enough parameters\r\n", sender->getPrifex(hostname));
+                        utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex(hostname));
                         break;
                     }
                     for (size_t i = 0; i < clients.size(); i++ )
@@ -159,20 +161,18 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
                                 {
                                     clients[i].getChannels()[channel_name] = false;
                                     for (size_t j = 0; j < target_channel->get_clients().size(); j++)
-                                {
-                                    if (target_channel->get_clients()[j].getNickName() == target_nick)
                                     {
-                                        target_channel->get_clients()[j].getChannels()[channel_name] = true;
-                                        break;
+                                        if (target_channel->get_clients()[j].getNickName() == target_nick)
+                                        {
+                                            target_channel->get_clients()[j].getChannels()[channel_name] = false;
+                                            break;
+                                        }
                                     }
-                                }
                                 }
                             }
                             else
-                                utils::reply(fd, "482 :the user isn't present in the channel\r\n", sender->getPrifex(hostname));
+                                utils::reply(fd, "482 MODE :the user isn't present in the channel\r\n", sender->getPrifex(hostname));
                         }
-                        else
-                            utils::reply(fd, "401 :No such nick\r\n", sender->getPrifex(hostname));
                     }
                     break;
                 case 't':
@@ -192,29 +192,33 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
         t++;
     }
     if (modes.length() != 1)
-        utils::reply(fd, "MODE " + channel_name + " " + modes + "\r\n", sender->getPrifex(hostname));
+    {
+        target_channel->set_mode(modes);
+        utils::reply(fd, "MODE " + channel_name + " :" + modes + "\r\n", sender->getPrifex(hostname));
+    }
     return (1);
 }
 
 void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
 {
-    Client *sender;
+    Client *sender = NULL;
     Channel *target_channel;
     vec_str tab;
 
     for(size_t i = 0; i < clients.size(); i++)
-    {
         if (clients[i].getFd() == fd)
             sender = &clients[i];
-    }
+    if (sender == NULL) return ;
     tab = split_it(value);
-    if (tab.size() < 2)
-        return utils::reply(fd, "461 :Not enough parameters\r\n", sender->getPrifex(hostname));
+    if (tab.size() < 1)
+        return utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex(hostname));
     else if (tab.size() > 3)
-        return utils::reply(fd, "461 :Too many parameters\r\n", sender->getPrifex(hostname));
+        return utils::reply(fd, "461 MODE :Too many parameters\r\n", sender->getPrifex(hostname));
     std::string channel_name = tab[0];
-    std::string target_mode = tab[1];
+    std::string target_mode = "";
     std::string target_nick = "";
+    if (tab.size() >= 2)
+        target_mode = tab[1];
     if (tab.size() == 3)
         target_nick = tab[2];
     if (channel_name[0] == '#')
@@ -225,7 +229,7 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
             if (sender->getChannels().find(channel_name) != sender->getChannels().end())
             {
                 if (sender->getChannels()[channel_name] == false)
-                    return utils::reply(fd, "482 :You're not a channel operator\r\n", sender->getPrifex(hostname));
+                    return utils::reply(fd, "482 MODE :You're not a channel operator\r\n", sender->getPrifex(hostname));
             }
         }
         else
@@ -233,7 +237,8 @@ void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::s
     }
     else
         return utils::reply(fd, "407 " + channel_name + " :No such channel\r\n", sender->getPrifex(hostname));
-    
+    if (tab.size() == 1)
+        return utils::reply(fd, "342 " + channel_name + " Current Modes: " + target_channel->get_mode() + "\r\n", hostname);
     if (target_mode[0] == '+')
     {
         if (setMode(target_mode, target_nick, target_channel, fd, sender, hostname, clients, channel_name, tab) == 0)

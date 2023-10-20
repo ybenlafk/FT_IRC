@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:40:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:41:01 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 15:00:11 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,5 +39,5 @@ Channel* check_channel(map_channel &channels, std::string channel, int fd, Clien
 Client* check_client_fd(vec_client &clients, int fd);
 Client* check_client_s(vec_client &clients, std::string user, int fd, Client *sender, std::string cmd, std::string hostname);
 int check_opratotPrivilege(Client *sender, Channel *channel);
-
+bool    isJoined(Client &client, std::string &name);
 #endif

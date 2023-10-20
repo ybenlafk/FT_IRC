@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:25 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:40:05 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 10:27:03 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void   Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &
             utils::reply(fd, "QUIT :" + msg + "\r\n", clients[i].getPrifex(hostname));
             for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
             {
-                std::cout << "channel : " << it->first << std::endl;
+                // std::cout << "channel : " << it->first << std::endl;
                 for (size_t j = 0; j < it->second.get_clients().size(); j++)
                 {
                     if (it->second.get_clients()[j].getFd() == fd)

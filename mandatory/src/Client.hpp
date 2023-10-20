@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:26:59 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:34:55 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 14:42:46 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class Client
         m_channel     channels;
         bool            pw;
         bool            auth;
+        bool            invited;
     public:
         Client();
         Client(Client const &src);
@@ -44,6 +45,7 @@ class Client
         void            setUserName(std::string user_name);
         void            setRealName(std::string real_name);
         void            setIpAddr(std::string ip_addr);
+        void            setInvited(bool invited);
         
         bool            getAuth() const;
         int             getFd() const;
@@ -52,6 +54,7 @@ class Client
         std::string     getUserName() const;
         std::string     getRealName() const;
         std::string     getIpAddr() const;
+        bool            getInvited() const;
 
         std::string      getPrifex(std::string hostname);
         std::string      getIp();

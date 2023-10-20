@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 10:34:39 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 14:43:05 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ void           Client::setUserName(std::string user_name)
 
 void           Client::setRealName(std::string real_name) {this->real_name = real_name;}
 
+void           Client::setInvited(bool invited) {this->invited = invited;}
+
 bool           Client::getAuth() const {return (this->auth);}
 
 bool           Client::getPw() const {return (this->pw);}
@@ -78,6 +80,8 @@ std::string    Client::getUserName() const {return (this->user_name);}
 std::string    Client::getRealName() const {return (this->real_name);}
 
 std::string    Client::getIpAddr() const {return (this->ip_addr);}
+
+bool           Client::getInvited() const {return (this->invited);}
 
 std::string   Client::getPrifex(std::string hostname)
 {

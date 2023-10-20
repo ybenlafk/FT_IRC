@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 22:09:00 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 11:30:32 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,8 +141,6 @@ int main(int ac, char **av)
                     std::system("clear");
                     std::cout << "\033[1;31m ♬ the song is stopped... \033[0m" << std::endl;
                 }
-                else
-                    ft_send(sock, "421 tchipa :Unknown command\r\n");
             }
         }
     }

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:42:10 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 14:48:08 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,13 @@ bool    isValidChannel(map_channel &channels, vec_str names, Client *client, siz
     if (!channels[names[i]].get_invite_only())
     {
         if (channels[names[i]].get_clients().size() < (size_t)channels[names[i]].get_limit())
+            return (true);
+        else
+            return (utils::reply(client->getFd(), "471 * " + names[i] + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);
+    }
+    else if (channels[names[i]].get_invite_only() && client->getInvited())
+    {
+         if (channels[names[i]].get_clients().size() < (size_t)channels[names[i]].get_limit())
             return (true);
         else
             return (utils::reply(client->getFd(), "471 * " + names[i] + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);

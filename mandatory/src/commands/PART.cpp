@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:15 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:39:24 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 10:05:26 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::s
                 vec_str names;
                 if (utils::split(value, ',', &names, &reason) == 0)
                 {
-                    utils::reply(fd, "461 * PART :Not enough parameters\r\n", clients[i].getPrifex(hostname));
+                    utils::reply(fd, "461 PART :Not enough parameters\r\n", clients[i].getPrifex(hostname));
                     return ;
                 }
                 for (size_t j = 0; j < names.size(); j++)
