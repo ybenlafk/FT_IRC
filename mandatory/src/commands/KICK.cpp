@@ -6,19 +6,21 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:48 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 10:26:53 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 17:03:29 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Cmds.hpp"
 
-void    removeFromChannel(map_channel &channels, std::string nick, std::string name, vec_client &clients)
+int    removeFromChannel(map_channel &channels, std::string nick, std::string name, vec_client &clients, int fd)
 {
-    for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
-        if (it->first == name)
-            for (size_t j = 0; j < it->second.get_clients().size(); j++)
-                if (it->second.get_clients()[j].getNickName() == nick)
-                    it->second.get_clients().erase(it->second.get_clients().begin() + j);
+    Client *client = utils::getClientByFd(fd, clients);
+    size_t s = channels[name].get_clients().size();
+    for (size_t j = 0; j < channels[name].get_clients().size(); j++)
+        if (channels[name].get_clients()[j].getNickName() == nick)
+            channels[name].get_clients().erase(channels[name].get_clients().begin() + j);
+    if (s == channels[name].get_clients().size())
+        return (utils::reply(fd, "441 KICK :He's not on that channel\r\n", client->getPrifex(utils::getHostName())), 1);
     for (map_channel::iterator it = channels.begin(); it != channels.end(); it++)
     {
        if (it->second.get_clients().size() == 0)
@@ -35,6 +37,7 @@ void    removeFromChannel(map_channel &channels, std::string nick, std::string n
                 clients[i].getChannels().erase(name);
         }
     }
+    return (0);
 }
 
 vec_str     getParams(std::string value)
@@ -101,13 +104,25 @@ void    Cmds::cmdKick(map_channel &channels, vec_client &clients, int fd, std::s
         utils::reply(fd, "403 KICK :No such channel\r\n", client->getPrifex(hostname));
         return ;
     }
-    else
+    else 
     {
         if (isOperator(clients, fd, params[0]))
         {
-            // std::cout << "KICK" << std::endl;
-            removeFromChannel(channels, params[1], params[0], clients);
-            utils::reply(fd, "KICK " + params[0] + " " + params[1] + " :" + client->getNickName() + "\r\n", client->getPrifex(hostname));
+            if (removeFromChannel(channels, params[1], params[0], clients, fd))
+                return ;
+            Client *target = utils::getClientByNick(params[1], clients);
+            if (!target)
+                return utils::reply(fd, "401 KICK :No such nick/channel\r\n", client->getPrifex(hostname));
+            if (params[2] == "")
+            {
+                utils::reply(fd, "KICK " + params[0] + " " + params[1] + " :" + client->getNickName() + "\r\n", client->getPrifex(hostname));
+                utils::reply(target->getFd(), "KICK " + params[0] + " " + params[1] + " :" + client->getNickName() + "\r\n", client->getPrifex(hostname));
+            }
+            else
+            {
+                utils::reply(fd, "KICK " + params[0] + " " + params[1] + " :" + params[2] + "\r\n", client->getPrifex(hostname));
+                utils::reply(target->getFd(), "KICK " + params[0] + " " + params[1] + " :" + params[2] + "\r\n", client->getPrifex(hostname));
+            }
         }
         else
             utils::reply(fd, "482 KICK :You're not a channel operator\r\n", client->getPrifex(hostname));

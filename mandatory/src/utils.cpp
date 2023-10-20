@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:47:58 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:29:46 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 16:00:41 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,19 @@ Client *utils::getClientByFd(int fd, vec_client clients)
     for (size_t i = 0; i < clients.size(); i++)
     {
         if (clients[i].getFd() == fd)
+        {
+            Client *res = &clients[i];
+            return (res);
+        }
+    }
+    return (NULL);
+}
+
+Client *utils::getClientByNick(std::string nick, vec_client clients)
+{
+    for (size_t i = 0; i < clients.size(); i++)
+    {
+        if (clients[i].getNickName() == nick)
         {
             Client *res = &clients[i];
             return (res);

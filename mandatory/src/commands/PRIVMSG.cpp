@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:21 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 22:17:08 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 17:45:52 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,10 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
     while (value[i] && value[i] != ':' && value[i] != ' ' && value[i] != '\t' && value[i] != '\r' && value[i] != '\n')
         target += value[i++];
     while (value[i] == ':') i++;
-    target = utils::strTrim(target, "\r\n\t ");
     while (value[i])
         msg += value[i++];
+    msg = utils::strTrim(msg, "\r\n\t ");
+    target = utils::strTrim(target, "\r\n\t ");
     if (target.empty() || msg.empty())
     {
         utils::reply(fd, "412 * :No message to send\r\n", client->getPrifex(hostname));
@@ -42,6 +43,18 @@ void    Cmds::cmdPrivmsg(vec_client clients, int fd, std::string value, map_chan
         if (channels.find(target) != channels.end())
         {
             Channel *chan = &channels[target];
+
+            int l = 1;
+            for (size_t i = 0 ; i < chan->get_clients().size();i++)
+            {
+                if (chan->get_clients()[i].getFd() == fd)
+                    l = 0;
+            }
+            if (l)
+            {
+                utils::reply(fd, "404 * " + target + " :Cannot send to channel\r\n", client->getPrifex(hostname));
+                return ;
+            }
             for (size_t i = 0; i < chan->get_clients().size(); i++)
             {
                 if (chan->get_clients()[i].getFd() != fd && isJoined(chan->get_clients()[i], target))

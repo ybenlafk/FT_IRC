@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 15:06:44 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 17:46:10 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,7 +252,7 @@ void    Server::run()
     this->pollfds.push_back(pollfdServer);
     while (true)
     {
-        int pl = poll(this->pollfds.data(), this->pollfds.size(), 0);
+        int pl = poll(&this->pollfds[0], this->pollfds.size(), 0);
         if (pl < 0)
             throw std::runtime_error("poll() failed");
         else if (pl == 0)

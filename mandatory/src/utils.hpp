@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 13:46:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:29:17 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 16:00:10 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ typedef std::vector<Client> vec_member;
 class utils
 {
     public:
-        static Client *getClientByFd(int fd, vec_client clients);
+        static Client       *getClientByFd(int fd, vec_client clients);
+        static Client       *getClientByNick(std::string nick, vec_client clients);
         static std::string  getCmd(std::string str, char c);
         static std::string  getValue(std::string str, char c);
         static std::string  strTrim(std::string str, std::string chars);
