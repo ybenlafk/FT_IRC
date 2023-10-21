@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 10:07:36 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 11:11:42 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ void Server::handleClients(int ServerSocket)
                 std::cout << "\033[1;32m● Connecting...\033[0m" << std::endl;
                 sockaddr_in user_addr;
                 socklen_t user_len = sizeof(user_addr);
-                int clientSocket = accept(ServerSocket, reinterpret_cast<sockaddr*>(&user_addr), &user_len);
+                int clientSocket = accept(ServerSocket, (sockaddr *)&user_addr, &user_len);
                 if (clientSocket < 0)
                     throw std::runtime_error("accept() failed");
                 if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
@@ -144,7 +144,6 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        // std::cout <<  this->popers[this->pollfds[i].fd] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)

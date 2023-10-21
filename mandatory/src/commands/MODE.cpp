@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 10:38:25 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 13:18:19 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int    setMode(std::string target_mode, std::string target_nick, Channel *target
                 }
                 break;
             case 't':
-                target_channel->set_topic_changeable(true);
+                target_channel->set_topic_changeable(false);
                 utils::reply(fd, "MODE " + channel_name + ": +t\r\n", sender->getPrifex(hostname));
                 break;
             case 'k':
@@ -188,7 +188,7 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
                     }
                     break;
                 case 't':
-                    target_channel->set_topic_changeable(false);
+                    target_channel->set_topic_changeable(true);
                     break;
                 case 'k':
                     target_channel->set_pw(false);

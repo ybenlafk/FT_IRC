@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:30 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 15:01:40 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 13:19:06 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void    Cmds::cmdTopic(map_channel &channels, vec_client &clients, int fd, std::
     Channel *channel = check_channel(channels, tab[0], fd, sender, "TOPIC", hostname);
     if (!channel)
         return ;
-    if (check_opratotPrivilege(sender, channel) == 0 && channel->get_topic_changeable() == false)
+    if (check_opratotPrivilege(sender, channel) == 0 && channel->get_topic_changeable() == true)
         return utils::reply(fd, "482 MODE :You're not channel operator\r\n", hostname);
     else if (isJoined(*sender, tab[0]) == false)
         return utils::reply(fd, "442 :You're not on that channel\r\n", hostname);

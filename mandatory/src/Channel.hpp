@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/03 10:48:09 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 15:03:42 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 13:17:51 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Channel
         long long   limit;
     public:
         Channel(){}
-        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), invite_only(false), topic_changeable(false), limit(INT_MAX) {}
+        Channel(std::string name, std::string key) : name(name), topic(""), mode(""), key(key), invite_only(false), topic_changeable(true), limit(INT_MAX) {}
         ~Channel(){}
 
         void        add_client(Client client);
