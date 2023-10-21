@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 20:41:48 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:13:45 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 09:57:02 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ bool ParseInput(std::string port, std::string pw)
 {
     if (port.empty() || pw.empty())
         return (false);
-    if (port.size() > 5 || pw.size() > 20)
+    if (pw.size() > 20)
         return (false);
     for (size_t i = 0; i < port.size(); i++)
         if (!std::isdigit(port[i]))
@@ -28,7 +28,7 @@ int main(int ac, char **av)
     if (ac != 3)
     {
         std::cout << "Usage: ./server <port> <password>" << std::endl;
-        return 1;
+        return (1);
     }
     try
     {

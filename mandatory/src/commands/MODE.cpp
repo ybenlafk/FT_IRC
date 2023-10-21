@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 15:24:01 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 10:38:25 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,16 @@ int check_int(std::string tab, int fd, Client *sender, std::string hostname)
     return 1;
 }
 
+void    inform(std::string channel_name, Channel *target_channel, Client *sender, std::string hostname)
+{
+    for (size_t i = 0; i < target_channel->get_clients().size(); i++)
+    {
+        utils::reply(target_channel->get_clients()[i].getFd(), "JOIN :" + channel_name + "\r\n", target_channel->get_clients()[i].getIp());
+        utils::reply(target_channel->get_clients()[i].getFd(), "353 " + sender->getNickName() + " = " + channel_name + " :" + target_channel->get_members() + "\r\n", hostname);
+        utils::reply(target_channel->get_clients()[i].getFd(), "366 " + sender->getNickName() + " " + channel_name + " :End of /NAMES list\r\n", hostname);
+    }
+}
+
 int    setMode(std::string target_mode, std::string target_nick, Channel *target_channel,\
         int fd, Client *sender, std::string hostname, vec_client &clients, \
         std::string channel_name, std::vector<std::string> tab)
@@ -81,7 +91,8 @@ int    setMode(std::string target_mode, std::string target_nick, Channel *target
                                     if (target_channel->get_clients()[j].getNickName() == target_nick)
                                     {
                                         target_channel->get_clients()[j].getChannels()[channel_name] = true;
-                                        utils::reply(fd, "MODE : +o\r\n", sender->getPrifex(hostname));
+                                        utils::reply(fd, "MODE " + channel_name + ": +o\r\n", sender->getPrifex(hostname));
+                                        inform(channel_name, target_channel, sender, hostname);
                                         break;
                                     }
                                 }
@@ -165,6 +176,7 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
                                         if (target_channel->get_clients()[j].getNickName() == target_nick)
                                         {
                                             target_channel->get_clients()[j].getChannels()[channel_name] = false;
+                                            inform(channel_name, target_channel, sender, hostname);
                                             break;
                                         }
                                     }

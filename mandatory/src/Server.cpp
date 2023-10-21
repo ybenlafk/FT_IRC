@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 17:46:10 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 10:07:36 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,7 @@ void Server::handleClients(int ServerSocket)
                                     switch (l)
                                     {
                                         case 0:
-                                            Cmds::cmdNick(clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdNick(clients, this->pollfds[i].fd, value, hostname, this->channels);
                                             break;
                                         case 1:
                                             Cmds::cmdJoin(this->channels, clients, this->pollfds[i].fd, value, hostname);

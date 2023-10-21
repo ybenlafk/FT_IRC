@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 14:48:08 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 21:11:39 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,7 @@ void    Cmds::cmdJoin(map_channel &channels, vec_client &clients, int fd, std::s
             if (clients[i].getAuth())
             {
                 parseJoin(value, channels, &clients[i], hostname);
-                printChannels(channels);
+                // printChannels(channels);
             }
         }
     }

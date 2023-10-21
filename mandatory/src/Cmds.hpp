@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:40:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 15:00:11 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 10:07:23 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ class Cmds
 {
     public:
         static  void    cmdMode(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
-        static  void    cmdNick(vec_client &clients, int fd, std::string nick, std::string hostname);
+        static  void    cmdNick(vec_client &clients, int fd, std::string nick, std::string hostname, map_channel &channels);
         static  void    cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &channels, std::string hostname);
         static  void    cmdPrivmsg(vec_client clients, int fd, std::string value, map_channel &channels, std::string hostname);
         static  void    cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);

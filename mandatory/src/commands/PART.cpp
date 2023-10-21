@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:15 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 10:05:26 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/20 21:11:24 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::s
                             clients[i].getChannels().erase(names[j]);
                             removeFromChannel(channels, fd, names[j], clients);
                             sendToMembers(channels, fd, names[j], clients, hostname);
-                            printChannels(channels);
+                            // printChannels(channels);
                         }
                         else
                             utils::reply(fd, "442 * " + names[j] + " :You're not on that channel\r\n", clients[i].getPrifex(hostname));
