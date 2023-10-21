@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 21:11:39 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 18:30:22 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,14 +91,14 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
         {
             if (keys.size() > i && !keys[i].empty())
             {
-                channels[names[i]] = Channel(names[i], keys[i]);
+                channels.insert(std::pair<std::string, Channel>(names[i], Channel(names[i], keys[i])));
                 client->add_channel(names[i], true);
                 channels[names[i]].add_client(*client);
                 channels[names[i]].set_pw(true);
             }
             else
             {
-                channels[names[i]] = Channel(names[i], "");
+                channels.insert(std::pair<std::string, Channel>(names[i], Channel(names[i], "")));
                 client->add_channel(names[i], true);
                 channels[names[i]].add_client(*client);
                 channels[names[i]].set_pw(false);

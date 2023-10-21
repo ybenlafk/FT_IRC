@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 11:30:32 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/21 16:08:30 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,15 +79,23 @@ std::string getValue(std::string str, char c)
 void playMP3(const std::string& filePath)
 {
     std::string command = "open " + filePath;
-    if (system(command.c_str()) == -1)
+    if (std::system(command.c_str()) == -1)
         throw std::runtime_error("Error: " + filePath + " could not be opened.");
 }
 
 void stopMP3()
 {
     std::string command = "kill $(pgrep -x Spotify)";
-    if (system(command.c_str()) == -1)
+    if (std::system(command.c_str()) == -1)
         throw std::runtime_error("Error: " + command + " could not be executed.");
+}
+
+bool isInt(std::string nb)
+{
+    for (size_t i = 0; i < nb.size(); i++)
+        if (!std::isdigit(nb[i]))
+            return (false);
+    return (true);
 }
 
 int main(int ac, char **av)
@@ -100,9 +108,9 @@ int main(int ac, char **av)
             std::string host = av[2];
             std::string pw = av[3];
             std::vector<std::string> files = getFileNames("bonus/songs.config");
-            if (av1.empty() || host.empty() || pw.empty()) return (0);
+            if (av1.empty() || host.empty() || pw.empty() || !isInt(av1)) throw std::runtime_error("Error: invalid arguments.");
             int port  = std::atoi(av1.c_str());
-
+            if (port < 0 || port > 65535) throw std::runtime_error("Error: invalid port.");
             int sock = socket(AF_INET, SOCK_STREAM, 0);
             if (sock == -1) return (0);
             struct hostent *hostinfo = gethostbyname(host.c_str());
@@ -114,7 +122,7 @@ int main(int ac, char **av)
             add.sin_family = AF_INET;
             add.sin_port = htons(port);
 
-            if (connect(sock, (struct sockaddr *)&add, sizeof(add)) == -1) return (0);
+            if (connect(sock, (struct sockaddr *)&add, sizeof(add)) == -1) throw std::runtime_error("Error: connect failed.");
             if (fcntl(sock, F_SETFL, O_NONBLOCK) == -1) throw std::runtime_error("Error: fcntl failed.");
             std::string nick = "tchipa";
             ft_send(sock, "PASS " + pw + "\r\n");
@@ -143,6 +151,8 @@ int main(int ac, char **av)
                 }
             }
         }
+        else
+            throw std::runtime_error("Error: invalid arguments.");
     }
     catch(const std::exception& e)
     {
