@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 13:18:19 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/22 12:12:58 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int    setMode(std::string target_mode, std::string target_nick, Channel *target
 {
     long long limit;
     int t = 1;
-    std::string modes = "+";
+    std::string modes = "";
     if ((target_mode.length() == 2) && (target_mode[t] == 'i' || target_mode[t] == 'o' || target_mode[t] == 'k' || target_mode[t] == 't' || target_mode[t] == 'l'))
     {
         modes += target_mode[t];
@@ -136,7 +136,7 @@ int    setMode(std::string target_mode, std::string target_nick, Channel *target
     else
         utils::reply(fd, "472 i :is unknown mode char to me\r\n", sender->getPrifex(hostname));
     if (modes.length() != 1)
-        target_channel->set_mode(modes);
+        target_channel->set_mode(target_channel->get_mode() + modes);
     return (1);
 }
 
@@ -144,13 +144,12 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
         int fd, Client *sender, std::string hostname, vec_client &clients, \
         std::string channel_name, std::vector<std::string> tab)
 {
-    std::string modes = "-";
+    std::string modes = "";
     int t = 1;
     while (target_mode[t])
     {
         if (target_mode[t] == 'i' || target_mode[t] == 'o' || target_mode[t] == 'k' || target_mode[t] == 't' || target_mode[t] == 'l')
         {
-            modes += target_mode[t];
             switch(target_mode[t])
             {
                 case 'i':
@@ -205,8 +204,11 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
     }
     if (modes.length() != 1)
     {
-        target_channel->set_mode(modes);
-        utils::reply(fd, "MODE " + channel_name + " :" + modes + "\r\n", sender->getPrifex(hostname));
+        for (size_t i = 0; i < modes.length(); i++)
+        {
+            if (target_channel->get_mode().find(modes[i]) != std::string::npos)
+                target_channel->set_mode(target_channel->get_mode().erase(target_channel->get_mode().find(modes[i]), 1));
+        }
     }
     return (1);
 }
