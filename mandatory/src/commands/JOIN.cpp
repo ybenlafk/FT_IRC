@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/23 22:55:38 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:46:29 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,24 +53,24 @@ void    serv_reply(vec_str names, map_channel &channels, Client *client, size_t 
     utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", hostname);
 }
 
-bool    isValidChannel(map_channel &channels, vec_str names, Client *client, size_t i, std::string hostname)
+bool    isValidChannel(map_channel &channels, std::string name, Client *client, std::string hostname)
 {
-    if (!channels[names[i]].get_invite_only())
+    if (!channels[name].get_invite_only())
     {
-        if (channels[names[i]].get_clients().size() < (size_t)channels[names[i]].get_limit())
+        if (channels[name].get_clients().size() < (size_t)channels[name].get_limit())
             return (true);
         else
-            return (utils::reply(client->getFd(), "471 * " + names[i] + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);
+            return (utils::reply(client->getFd(), "471 * " + name + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);
     }
-    else if (channels[names[i]].get_invite_only() && client->getInvited())
+    else if (channels[name].get_invite_only() && client->getInvited(name))
     {
-         if (channels[names[i]].get_clients().size() < (size_t)channels[names[i]].get_limit())
+         if (channels[name].get_clients().size() < (size_t)channels[name].get_limit())
             return (true);
         else
-            return (utils::reply(client->getFd(), "471 * " + names[i] + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);
+            return (utils::reply(client->getFd(), "471 * " + name + " :Cannot join channel (+l)\r\n", client->getPrifex(hostname)), false);
     }
     else
-        return (utils::reply(client->getFd(), "473 * " + names[i] + " :Cannot join channel (+i)\r\n", client->getPrifex(hostname)), false);
+        return (utils::reply(client->getFd(), "473 * " + name + " :Cannot join channel (+i)\r\n", client->getPrifex(hostname)), false);
     return (false);
 }
 
@@ -116,7 +116,7 @@ void    Cmds::cmdJoin(map_channel &channels, std::string value, std::string host
                 {
                     if (channels[names[i]].get_key() == keys[i])
                     {
-                        if (isValidChannel(channels, names, sender, i, hostname))
+                        if (isValidChannel(channels, names[i], sender, hostname))
                         {
                             if (isClientExist(channels[names[i]].get_clients(), sender->getFd()))
                             {
@@ -134,7 +134,7 @@ void    Cmds::cmdJoin(map_channel &channels, std::string value, std::string host
             }
             else
             {
-                if (isValidChannel(channels, names, sender, i, hostname))
+                if (isValidChannel(channels, names[i], sender, hostname))
                 {
                     if (isClientExist(channels[names[i]].get_clients(), sender->getFd()))
                     {

@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:10 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/23 22:55:20 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:42:29 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,6 @@ Channel* check_channel(map_channel &channels, std::string channel, int fd, Clien
         return (res);
     }
     utils::reply(fd, "403 "+cmd+ " :No such channel\r\n", sender->getPrifex(hostname));
-    return (NULL);
-}
-
-Client* check_client_fd(vec_client &clients, int fd)
-{
-    for (size_t i = 0; i < clients.size(); i++)
-    {
-        if (clients[i].getFd() == fd)
-            return &clients[i];
-    }
     return (NULL);
 }
 
@@ -83,7 +73,7 @@ void    Cmds::cmdInvite(map_channel &channels, vec_client &clients, int fd, std:
         else
         {
             utils::reply(user->getFd(), "INVITE "+user->getNickName()+" "+channel->get_name()+"\r\n", sender->getPrifex(hostname));
-            user->setInvited(true);
+            user->setInvited(channel->get_name(), true);
         }
     }
 }

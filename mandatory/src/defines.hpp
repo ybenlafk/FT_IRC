@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:47:05 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/19 16:35:23 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:46:04 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ typedef std::vector<std::string> vec_str;
 typedef std::map<std::string, Channel> map_channel;
 typedef std::map<int, std::string> map_int_str;
 typedef std::map<int, sockaddr_in> map_int_addr;
-// typedef std::vector<Channel*> vec_channel;
 typedef std::vector<Client> vec_client;
 
 
