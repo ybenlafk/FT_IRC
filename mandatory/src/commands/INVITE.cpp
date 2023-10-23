@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:10 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 14:43:30 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 22:55:20 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,11 @@ void    sendToClients(std::string msg, vec_client clients, int fd, std::string h
             utils::reply(clients[i].getFd(), msg, clients[i].getPrifex(hostname));
 }
 
-void    Cmds::cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
+void    Cmds::cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname, Client *sender)
 {
     std::vector<std::string> tab = split_it(value);
-    Client* sender = check_client_fd(clients, fd);
+    if (!sender)
+        return ;
     if (tab.size() < 2)
         return utils::reply (fd, "461 INVITE :Not enough parameters\r\n",sender->getPrifex(hostname));
     Channel *channel = check_channel(channels, tab[1], fd, sender, "INVITE", hostname);

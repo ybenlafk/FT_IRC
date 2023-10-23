@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/26 09:29:47 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 09:07:41 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 20:28:58 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,10 @@ bool           Client::getInvited() const {return (this->invited);}
 
 std::string   Client::getPrifex(std::string hostname)
 {
-    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (hostname.empty() ? "" : "@" + hostname);
+    return this->nick_name +  "!" + utils::getCmd(user_name, ' ') + "@" + hostname;
 }
 
 std::string   Client::getIp()
 {
-    return this->nick_name + (user_name.empty() ? "" : "!" + utils::getCmd(user_name, ' ')) + (this->getIpAddr().empty() ? "" : "@" + this->getIpAddr());
+    return this->nick_name + "!" + utils::getCmd(user_name, ' ') +  "@" + this->getIpAddr();
 }

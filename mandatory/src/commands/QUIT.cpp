@@ -6,13 +6,14 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:25 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 18:49:15 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:00:54 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../Cmds.hpp"
 
-void Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &channels, std::string hostname) {
+void Cmds::cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &channels, std::string hostname)
+{
     // Find and mark the disconnected client for removal
     vec_client::iterator it = clients.begin();
     while (it != clients.end())

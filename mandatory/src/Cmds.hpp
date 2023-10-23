@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/29 16:40:24 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 10:07:23 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:08:40 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,15 @@
 class Cmds
 {
     public:
-        static  void    cmdMode(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
-        static  void    cmdNick(vec_client &clients, int fd, std::string nick, std::string hostname, map_channel &channels);
+        static  void    cmdMode(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname, Client *sender);
+        static  void    cmdNick(vec_client &clients, std::string nick, std::string hostname, map_channel &channels, Client *sender);
         static  void    cmdQuit(vec_client &clients, int fd, std::string msg, map_channel &channels, std::string hostname);
-        static  void    cmdPrivmsg(vec_client clients, int fd, std::string value, map_channel &channels, std::string hostname);
-        static  void    cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
-        static  void    cmdPart(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
-        static  void    cmdKick(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
-        static  void    cmdTopic(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
-        static  void    cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname);
+        static  void    cmdPrivmsg(vec_client &clients, int fd, std::string value, map_channel &channels, std::string hostname, Client *sender);
+        static  void    cmdJoin(map_channel &channels, std::string value, std::string hostname, Client *sender);
+        static  void    cmdPart(map_channel &channels, vec_client &clients, std::string value, std::string hostname, Client *sender);
+        static  void    cmdKick(map_channel &channels, vec_client &clients, std::string value, std::string hostname, Client *sender);
+        static  void    cmdTopic(map_channel &channels, std::string value, std::string hostname, Client *sender);
+        static  void    cmdInvite(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname, Client *sender);
         
 };
 

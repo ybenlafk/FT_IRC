@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 11:11:42 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:10:49 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,31 +186,31 @@ void Server::handleClients(int ServerSocket)
                                     switch (l)
                                     {
                                         case 0:
-                                            Cmds::cmdNick(clients, this->pollfds[i].fd, value, hostname, this->channels);
+                                            Cmds::cmdNick(clients, value, hostname, this->channels, &(*it));
                                             break;
                                         case 1:
-                                            Cmds::cmdJoin(this->channels, clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdJoin(this->channels, value, hostname, &(*it));
                                             break;
                                         case 2:
-                                            Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value, hostname, &(*it));
                                             break;
                                         case 3:
                                             Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels, hostname);
                                             break;
                                         case 4:
-                                            Cmds::cmdKick(this->channels, clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdKick(this->channels, clients,  value, hostname, &(*it));
                                             break;
                                         case 5:
-                                            Cmds::cmdInvite(this->channels, clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdInvite(this->channels, clients, this->pollfds[i].fd, value, hostname, &(*it));
                                             break;
                                         case 6:
-                                            Cmds::cmdTopic(this->channels, clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdTopic(this->channels, value, hostname, &(*it));
                                             break;
                                         case 7:
-                                            Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels, hostname);
+                                            Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels, hostname, &(*it));
                                             break;
                                         case 8:
-                                            Cmds::cmdPart(this->channels, clients, this->pollfds[i].fd, value, hostname);
+                                            Cmds::cmdPart(this->channels, clients, value, hostname, &(*it));
                                             break;
                                         case 9:
                                             utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));

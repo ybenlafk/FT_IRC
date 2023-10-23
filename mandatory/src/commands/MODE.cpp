@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:45 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/22 12:12:58 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 22:57:14 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,16 +213,12 @@ int unsetMode(std::string target_mode, std::string target_nick, Channel *target_
     return (1);
 }
 
-void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
+void    Cmds::cmdMode(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname, Client *sender)
 {
-    Client *sender = NULL;
     Channel *target_channel;
     vec_str tab;
 
-    for(size_t i = 0; i < clients.size(); i++)
-        if (clients[i].getFd() == fd)
-            sender = &clients[i];
-    if (sender == NULL) return ;
+    if (!sender) return ;
     tab = split_it(value);
     if (tab.size() < 1)
         return utils::reply(fd, "461 MODE :Not enough parameters\r\n", sender->getPrifex(hostname));

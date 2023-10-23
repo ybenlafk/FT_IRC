@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:30 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 13:19:06 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 23:08:16 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,37 +28,36 @@ vec_str split_it_again(std::string tab)
     return(res);
 }
 
-void    Cmds::cmdTopic(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
+void    Cmds::cmdTopic(map_channel &channels, std::string value, std::string hostname, Client *sender)
 {
     std::vector<std::string> tab = split_it_again(value);
-    Client* sender = check_client_fd(clients, fd);
     if(!sender)
         return ;
     // check if the channel exist
-    Channel *channel = check_channel(channels, tab[0], fd, sender, "TOPIC", hostname);
+    Channel *channel = check_channel(channels, tab[0], sender->getFd(), sender, "TOPIC", hostname);
     if (!channel)
         return ;
     if (check_opratotPrivilege(sender, channel) == 0 && channel->get_topic_changeable() == true)
-        return utils::reply(fd, "482 MODE :You're not channel operator\r\n", hostname);
+        return utils::reply(sender->getFd(), "482 MODE :You're not channel operator\r\n", hostname);
     else if (isJoined(*sender, tab[0]) == false)
-        return utils::reply(fd, "442 :You're not on that channel\r\n", hostname);
+        return utils::reply(sender->getFd(), "442 :You're not on that channel\r\n", hostname);
     if (tab.size() == 1)
     {
         if (channel->get_topic().empty())
-            return utils::reply(fd, "331 :No topic is set\r\n", hostname);
-        return utils::reply(fd, "332 " + sender->getNickName() + " " + channel->get_name() + " :"+channel->get_topic()+"\r\n", hostname);
+            return utils::reply(sender->getFd(), "331 :No topic is set\r\n", hostname);
+        return utils::reply(sender->getFd(), "332 " + sender->getNickName() + " " + channel->get_name() + " :"+channel->get_topic()+"\r\n", hostname);
     }
     else
     {
         if(tab[1][0] == ':' && tab[1].length() > 1)
         {
             channel->set_topic(utils::strTrim(tab[1], "\t\n\r :"));
-            return utils::reply(fd, "TOPIC "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex(hostname));
+            return utils::reply(sender->getFd(), "TOPIC "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex(hostname));
         }
         else if (tab[1][0] == ':')
         {
             channel->set_topic("");
-            return utils::reply(fd, "TOPIC "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex(hostname));
+            return utils::reply(sender->getFd(), "TOPIC "+channel->get_name()+" :"+channel->get_topic()+"\r\n", sender->getPrifex(hostname));
         }
     }
 }

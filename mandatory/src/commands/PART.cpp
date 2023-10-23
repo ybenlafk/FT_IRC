@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:15 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/20 21:11:24 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 20:51:29 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,43 +57,40 @@ void    sendToMembers(map_channel &channels, int fd, std::string name, vec_clien
     }
 }
 
-void    Cmds::cmdPart(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
+void    Cmds::cmdPart(map_channel &channels, vec_client &clients, std::string value, std::string hostname, Client *sender)
 {
-    for (size_t i = 0; i < clients.size(); i++)
+    std::string reason = "";
+    vec_str names;
+
+    if (!sender || (sender && sender->getAuth() == false))
     {
-        if (clients[i].getFd() == fd)
+        utils::reply(sender->getFd(), "451 * :You have not registered\r\n", hostname);
+        return ;
+    }
+
+    if (utils::split(value, ',', &names, &reason) == 0)
+    {
+        utils::reply(sender->getFd(), "461 PART :Not enough parameters\r\n", sender->getPrifex(hostname));
+        return ;
+    }
+    for (size_t j = 0; j < names.size(); j++)
+    {
+        if (channels.find(names[j]) != channels.end())
         {
-            if (clients[i].getAuth())
+            if (isJoined(*sender, names[j]))
             {
-                std::string reason = "";
-                vec_str names;
-                if (utils::split(value, ',', &names, &reason) == 0)
-                {
-                    utils::reply(fd, "461 PART :Not enough parameters\r\n", clients[i].getPrifex(hostname));
-                    return ;
-                }
-                for (size_t j = 0; j < names.size(); j++)
-                {
-                    if (channels.find(names[j]) != channels.end())
-                    {
-                        if (isJoined(clients[i], names[j]))
-                        {
-                            if (reason.empty())
-                                utils::reply(fd, "PART " + names[j] + "\r\n", clients[i].getPrifex(hostname));
-                            else
-                                utils::reply(fd, "PART " + names[j] + " :" + reason + "\r\n", clients[i].getPrifex(hostname));
-                            clients[i].getChannels().erase(names[j]);
-                            removeFromChannel(channels, fd, names[j], clients);
-                            sendToMembers(channels, fd, names[j], clients, hostname);
-                            // printChannels(channels);
-                        }
-                        else
-                            utils::reply(fd, "442 * " + names[j] + " :You're not on that channel\r\n", clients[i].getPrifex(hostname));
-                    }
-                    else
-                        utils::reply(fd, "403 * " + names[j] + " :No such channel\r\n", clients[i].getPrifex(hostname));
-                }
+                if (reason.empty())
+                    utils::reply(sender->getFd(), "PART " + names[j] + "\r\n", sender->getPrifex(hostname));
+                else
+                    utils::reply(sender->getFd(), "PART " + names[j] + " :" + reason + "\r\n", sender->getPrifex(hostname));
+                sender->getChannels().erase(names[j]);
+                removeFromChannel(channels, sender->getFd(), names[j], clients);
+                sendToMembers(channels, sender->getFd(), names[j], clients, hostname);
             }
+            else
+                utils::reply(sender->getFd(), "442 * " + names[j] + " :You're not on that channel\r\n", sender->getPrifex(hostname));
         }
+        else
+            utils::reply(sender->getFd(), "403 * " + names[j] + " :No such channel\r\n", sender->getPrifex(hostname));
     }
 }

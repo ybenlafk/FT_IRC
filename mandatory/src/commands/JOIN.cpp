@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:52:04 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 18:30:22 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/23 22:55:38 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,17 +74,18 @@ bool    isValidChannel(map_channel &channels, vec_str names, Client *client, siz
     return (false);
 }
 
-void          parseJoin(std::string value, map_channel &channels, Client *client, std::string hostname)
+void    Cmds::cmdJoin(map_channel &channels, std::string value, std::string hostname, Client *sender)
 {
-    vec_str  names;
     vec_str  keys;
+    vec_str  names;
 
+    if (!sender) return;
     utils::split(value, ',', &names, &keys);
     for (size_t i = 0; i < names.size(); i++)
     {
         if (!utils::isValidName(names[i]))
         {
-            utils::reply(client->getFd(), "403 * " + names[i] + " :No such channel\r\n", client->getPrifex(hostname));
+            utils::reply(sender->getFd(), "403 * " + names[i] + " :No such channel\r\n", sender->getPrifex(hostname));
             continue ;
         }
         if (channels.find(names[i]) == channels.end())
@@ -92,20 +93,20 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
             if (keys.size() > i && !keys[i].empty())
             {
                 channels.insert(std::pair<std::string, Channel>(names[i], Channel(names[i], keys[i])));
-                client->add_channel(names[i], true);
-                channels[names[i]].add_client(*client);
+                sender->add_channel(names[i], true);
+                channels[names[i]].add_client(*sender);
                 channels[names[i]].set_pw(true);
             }
             else
             {
                 channels.insert(std::pair<std::string, Channel>(names[i], Channel(names[i], "")));
-                client->add_channel(names[i], true);
-                channels[names[i]].add_client(*client);
+                sender->add_channel(names[i], true);
+                channels[names[i]].add_client(*sender);
                 channels[names[i]].set_pw(false);
             }
-            utils::reply(client->getFd(), "JOIN :" + names[i] + "\r\n", client->getIp());
-            utils::reply(client->getFd(), "353 " + client->getNickName() + " = " + names[i] + " :" + channels[names[i]].get_members() + "\r\n",  hostname);
-            utils::reply(client->getFd(), "366 " + client->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", hostname);
+            utils::reply(sender->getFd(), "JOIN :" + names[i] + "\r\n", sender->getIp());
+            utils::reply(sender->getFd(), "353 " + sender->getNickName() + " = " + names[i] + " :" + channels[names[i]].get_members() + "\r\n",  hostname);
+            utils::reply(sender->getFd(), "366 " + sender->getNickName() + " " + names[i] + " :End of /NAMES list\r\n", hostname);
         }
         else
         {
@@ -115,48 +116,33 @@ void          parseJoin(std::string value, map_channel &channels, Client *client
                 {
                     if (channels[names[i]].get_key() == keys[i])
                     {
-                        if (isValidChannel(channels, names, client, i, hostname))
+                        if (isValidChannel(channels, names, sender, i, hostname))
                         {
-                            if (isClientExist(channels[names[i]].get_clients(), client->getFd()))
+                            if (isClientExist(channels[names[i]].get_clients(), sender->getFd()))
                             {
-                                client->add_channel(names[i], false);
-                                channels[names[i]].add_client(*client);
-                                serv_reply(names, channels, client, i, hostname);
+                                sender->add_channel(names[i], false);
+                                channels[names[i]].add_client(*sender);
+                                serv_reply(names, channels, sender, i, hostname);
                             }
                         }
                     }
                     else
-                        utils::reply(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", client->getPrifex(hostname));
+                        utils::reply(sender->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", sender->getPrifex(hostname));
                 }
                 else
-                    utils::reply(client->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", client->getPrifex(hostname));
+                    utils::reply(sender->getFd(), "475 * " + names[i] + " :Cannot join channel (+k)\r\n", sender->getPrifex(hostname));
             }
             else
             {
-                if (isValidChannel(channels, names, client, i, hostname))
+                if (isValidChannel(channels, names, sender, i, hostname))
                 {
-                    if (isClientExist(channels[names[i]].get_clients(), client->getFd()))
+                    if (isClientExist(channels[names[i]].get_clients(), sender->getFd()))
                     {
-                        client->add_channel(names[i], false);
-                        channels[names[i]].add_client(*client);
-                        serv_reply(names, channels, client, i, hostname);
+                        sender->add_channel(names[i], false);
+                        channels[names[i]].add_client(*sender);
+                        serv_reply(names, channels, sender, i, hostname);
                     }
                 }
-            }
-        }
-    }
-}
-
-void    Cmds::cmdJoin(map_channel &channels, vec_client &clients, int fd, std::string value, std::string hostname)
-{
-    for (size_t i = 0; i < clients.size(); i++)
-    {
-        if (clients[i].getFd() == fd)
-        {
-            if (clients[i].getAuth())
-            {
-                parseJoin(value, channels, &clients[i], hostname);
-                // printChannels(channels);
             }
         }
     }
