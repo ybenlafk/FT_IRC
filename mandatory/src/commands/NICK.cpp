@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 12:51:12 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/23 23:00:25 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/24 12:07:21 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void    Cmds::cmdNick(vec_client &clients, std::string nick, std::string hostnam
         nick.erase(0, 1);
     for (size_t i = 0; i < clients.size(); i++)
     {
-        if (clients[i].getFd() != sender->getFd() && clients[i].getAuth() == true)
+        if (clients[i].getFd() != sender->getFd())
         {
             if (clients[i].getNickName() == nick)
             {

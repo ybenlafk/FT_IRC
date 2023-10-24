@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/22 21:07:17 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/23 23:10:49 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/24 12:04:08 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void    fillBuffers(vec_str &buffers, std::string str)
 {
     int i = 0;
     std::string word = "";
+    if (str.empty()) return ;
     while (str[i])
     {
         if (str[i] == '\r' && str[i + 1] == '\n')
@@ -144,6 +145,7 @@ void Server::handleClients(int ServerSocket)
                     for (size_t v = 0; v < this->buffers.size(); v++)
                     {
                         int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
+                        std::cout << "buffer : " << buffers[v] << std::endl;
                         if (res == 0)
                             continue;
                         else if (res == 2)

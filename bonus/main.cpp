@@ -6,7 +6,7 @@
 /*   By: ybenlafk <ybenlafk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 10:25:38 by ybenlafk          #+#    #+#             */
-/*   Updated: 2023/10/21 16:08:30 by ybenlafk         ###   ########.fr       */
+/*   Updated: 2023/10/24 12:11:46 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,12 @@ std::string getValue(std::string str, char c)
 {
     std::string value = "";
     int i = 0;
-    if (str[i] == ':') i++;
+    if (str.empty()) return (value);
+
+    if (!str.empty() && str[i] == ':') i++;
+
     while (str[i] && str[i] != c) i++;
-    i++;
+    if (str[i] == c) i++;
     while (str[i]) value += str[i++];
     return (strTrim(value, " \t\r\n"));
 }
@@ -139,6 +142,7 @@ int main(int ac, char **av)
                 std::string song = getRandomSong(files);
                 if (msg == "play")
                 {
+                    stopMP3();
                     playMP3(song);
                     std::system("clear");
                     std::cout << "\033[1;32m ♬ the song is playing... \033[0m" << std::endl;
@@ -159,6 +163,3 @@ int main(int ac, char **av)
         std::cerr << e.what() << '\n';
     }
 }
-
-// ─●─────────────── ⇆
-// 　◁　　❚❚　　▷　　↻
