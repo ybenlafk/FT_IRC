@@ -17,19 +17,19 @@ This project is an IRC (Internet Relay Chat) server implemented in C++ using soc
 1. Clone the repository to your local machine:
 
    ````
-   git clone https://github.com/your-username/irc-server.git
+   git clone https://github.com/ybenlafk/FT_IRC.git
    ````
 
 2. Navigate to the project directory:
 
    ````
-   cd irc-server
+   cd FT_IRC
    ````
 
 3. Compile the source code using a C++ compiler. For example, using g++:
 
    ````
-   g++ -o irc-server server.cpp
+   make
    ````
 
 ## Usage
@@ -37,13 +37,14 @@ This project is an IRC (Internet Relay Chat) server implemented in C++ using soc
 1. Start the server by running the compiled executable:
 
    ````
-   ./irc-server
+   ./ircserv <port> <password>
    ````
 
 2. Configure your IRC client (e.g., LimeChat) to connect to the server. Use the following settings:
 
    - Server address: localhost (or the IP address of the machine running the server)
-   - Port: 6667 (default IRC port)
+   - Port: <port> (default IRC port)
+   - password: <password> use the password that you used to run the server
 
 3. Connect your IRC client to the server.
 
