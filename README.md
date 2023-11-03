@@ -18,19 +18,19 @@ This project is an IRC (Internet Relay Chat) server implemented in C++ using soc
 
    ````
    git clone https://github.com/your-username/irc-server.git
-   ```
+   ````
 
 2. Navigate to the project directory:
 
    ````
    cd irc-server
-   ```
+   ````
 
 3. Compile the source code using a C++ compiler. For example, using g++:
 
    ````
    g++ -o irc-server server.cpp
-   ```
+   ````
 
 ## Usage
 
@@ -38,7 +38,7 @@ This project is an IRC (Internet Relay Chat) server implemented in C++ using soc
 
    ````
    ./irc-server
-   ```
+   ````
 
 2. Configure your IRC client (e.g., LimeChat) to connect to the server. Use the following settings:
 
@@ -59,19 +59,19 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 
    ````
    git checkout -b feature/your-feature-name
-   ```
+   ````
 
 3. Make the necessary changes and commit them:
 
    ````
    git commit -m "Add your commit message"
-   ```
+   ````
 
 4. Push your changes to your forked repository:
 
    ````
    git push origin feature/your-feature-name
-   ```
+   ````
 
 5. Open a pull request on the original repository and provide a clear description of your changes.
 
