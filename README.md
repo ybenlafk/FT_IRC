@@ -12,6 +12,24 @@ This project is an IRC (Internet Relay Chat) server implemented in C++ using soc
 
 - Server-client protocol: The server follows the IRC protocol, ensuring compatibility with IRC clients such as LimeChat. Clients can connect to the server using LimeChat or any other IRC client that supports the IRC protocol.
 
+## Bonus Features
+
+In addition to the core IRC server functionality, this project also includes some bonus features:
+
+### File Transfer
+
+The server supports file transfer between clients. Clients can send and receive files through private messages or channels.
+
+### IRC Bot
+
+An IRC bot is implemented in this project, providing some additional fun and utility. The bot can perform various tasks, including playing a random song on Spotify. To interact with the bot, use the following command:
+
+````
+PRIVMSG tchipa play // to play the music.
+````
+````
+PRIVMSG tchipa stop // to stop it.
+````
 ## Installation
 
 1. Clone the repository to your local machine:
@@ -31,7 +49,7 @@ This project is an IRC (Internet Relay Chat) server implemented in C++ using soc
    ````
    make
    ````
-
+   
 ## Usage
 
 1. Start the server by running the compiled executable:
