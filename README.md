@@ -22,7 +22,7 @@ The server supports file transfer between clients. Clients can send and receive 
 
 ### IRC Bot
 
-An IRC bot is implemented in this project, providing some additional fun and utility. The bot can perform various tasks, including playing a random song on Spotify. To interact with the bot, use the following command:
+An IRC bot is implemented in this project, providing some additional fun and utility. The bot can perform various tasks, including playing a random song on Spotify. To interact with the bot, connect ot the server using an irc client (LimeChat is recommonded) ,use the following command:
 
 ````
 PRIVMSG tchipa play // to play the music.
@@ -46,27 +46,35 @@ PRIVMSG tchipa stop // to stop it.
 
 3. Compile the source code using a C++ compiler. For example, using g++:
 
+   - To run the mandatory part:
    ````
    make
+   ````
+   - To run the bonus part:
+   ````
+   make bonus
    ````
    
 ## Usage
 
 1. Start the server by running the compiled executable:
-
+   - To execute the mandatory part:
    ````
-   ./ircserv <port> <password>
+   ./ircserv <port> <password> // <port>: the port that the server is gonna runing on it, <password> irc server password.
    ````
-
-2. Configure your IRC client (e.g., LimeChat) to connect to the server. Use the following settings:
+   - To execute the mandatory part:
+   ````
+   ./ircbot <port> <hostname> <password> // <port>: the port that the bot is gonna runing on it, <hostname> the hostname of the machine that the server is runing on it, <password> irc server password.
+   ````
+1. Configure your IRC client (e.g., LimeChat) to connect to the server. Use the following settings:
 
    - Server address: localhost (or the IP address of the machine running the server)
    - Port: <port> (default IRC port)
    - password: <password> use the password that you used to run the server
 
-3. Connect your IRC client to the server.
+2. Connect your IRC client to the server.
 
-4. Use your IRC client to join channels, send messages, and interact with other connected clients.
+3. Use your IRC client to join channels, send messages, and interact with other connected clients.
 
 ## Contributing
 
