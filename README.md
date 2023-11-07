@@ -64,7 +64,7 @@ PRIVMSG tchipa stop // to stop it.
    ````
    - To execute the mandatory part:
    ````
-   ./ircbot <port> <hostname> <password> // <port>: the port that the bot is gonna runing on it, <hostname> the hostname of the machine that the server is runing on it, <password> irc server password.
+   ./ircbot <port> <hostname> <password> // <port>: the IRC server port, <hostname> the hostname of the machine that the server is runing on it, <password> irc server password.
    ````
 1. Configure your IRC client (e.g., LimeChat) to connect to the server. Use the following settings:
 
