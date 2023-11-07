@@ -22,7 +22,7 @@ The server supports file transfer between clients. Clients can send and receive 
 
 ### IRC Bot
 
-An IRC bot is implemented in this project, providing some additional fun and utility. The bot can perform various tasks, including playing a random song on Spotify. To interact with the bot, connect ot the server using an irc client (LimeChat is recommonded) ,use the following command:
+An IRC bot is implemented in this project, providing some additional fun and utility. The bot can perform various tasks, including playing a random song on Spotify. To interact with the bot, connect to the server using an irc client (LimeChat is recommonded) ,use the following command:
 
 ````
 PRIVMSG tchipa play // to play the music.
