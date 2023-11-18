@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef OPS
-# define OPS
+#pragma once
 
 #include "headers.hpp"
 #include "Client.hpp"
@@ -64,5 +63,3 @@ class Channel
 
         std::string get_members();
 };
-
-#endif

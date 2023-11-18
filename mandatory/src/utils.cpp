@@ -12,7 +12,6 @@
 
 #include "utils.hpp"
 
-
 std::string utils::getCmd(std::string str, char c)
 {
     std::string cmd = "";
@@ -20,6 +19,124 @@ std::string utils::getCmd(std::string str, char c)
     while (str[i] && str[i] != c) cmd += str[i++];
     return (cmd);
 }
+
+void utils::AcceptConnection(int ServerSocket, Server &server)
+{
+    std::cout << "\033[1;32m● Connecting...\033[0m" << std::endl;
+    sockaddr_in user_addr;
+    socklen_t user_len = sizeof(user_addr);
+    int clientSocket = accept(ServerSocket, (sockaddr *)&user_addr, &user_len);
+    if (clientSocket < 0)
+        throw std::runtime_error("accept() failed");
+    if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
+        throw std::runtime_error("fcntl() failed");
+    struct pollfd pollfdClient;
+    pollfdClient.fd = clientSocket;
+    pollfdClient.events = POLLIN;
+    pollfdClient.revents = 0;
+    server.pollfds.push_back(pollfdClient);
+    server.popers[clientSocket] = "";
+    server.addrs[clientSocket] = user_addr;
+}
+
+
+void    utils::HandleReq(Server &server, int i, std::string hostname)
+{
+    for (size_t v = 0; v < server.buffers.size(); v++)
+    {
+        int res = utils::bufferChecker(server.buffers[v], server.popers[server.pollfds[i].fd]);
+        if (res == 0)
+            continue;
+        else if (res == 2)
+        {
+            utils::ft_send(server.pollfds[i].fd, "417 * :Too long command\r\n");
+            continue;
+        }
+        if (isExist(server.clients, server.pollfds[i].fd))
+            server.clients.push_back(Client(server.pollfds[i].fd, "", "", "", false));
+        vec_client::iterator it = server.clients.begin();
+        for (; it != server.clients.end(); it++)
+        {
+            if (it->getFd() == server.pollfds[i].fd)
+            {
+                if (it->getAuth() == false)
+                {
+                    int res = server.AddClient(server.popers[server.pollfds[i].fd], &(*it), server.pollfds[i].fd);
+                    if (res == 1)
+                        utils::ft_send(server.pollfds[i].fd, "464 * :Password incorrect\r\n");
+                    else if (res == 2)
+                        utils::ft_send(server.pollfds[i].fd, "433 * :Nickname is already in use\r\n");
+                    else if (res == 0 && it->getAuth() == true)
+                    {
+                        std::cout << "\033[1;32m● Client " << it->getNickName() <<" connected\033[0m" << std::endl;
+                        it->setIpAddr(utils::get_ip(server.addrs[server.pollfds[i].fd]));
+                        utils::reply(server.pollfds[i].fd, "001 " + it->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", it->getPrifex(hostname));
+                    }
+                }
+                else if (it->getAuth() == true)
+                    utils::ExecCmds(server, i, it, hostname);
+                server.popers[server.pollfds[i].fd] = "";
+                break;
+            }
+        }
+    }
+}
+
+
+void    utils::ExecCmds(Server &server, int i, vec_client::iterator &it, std::string hostname)
+{
+    std::string cmds[12] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER", "PONG"};
+    std::string cmd = utils::strTrim(server.popers[server.pollfds[i].fd], "\r\n\t ");
+    cmd = utils::getCmd(server.popers[server.pollfds[i].fd], ' ');
+    cmd = utils::strTrim(cmd, "\r\n\t ");
+    std::string value = utils::getValue(server.popers[server.pollfds[i].fd], ' ');
+    value = utils::strTrim(value, "\r\n\t ");
+    size_t l = 0;
+    for (; l < 12; l++)
+        if (cmd == cmds[l]) break;
+    switch (l)
+    {
+        case 0:
+            Cmds::cmdNick(server.clients, value, hostname, server.channels, &(*it));
+            break;
+        case 1:
+            Cmds::cmdJoin(server.channels, value, hostname, &(*it));
+            break;
+        case 2:
+            Cmds::cmdMode(server.channels, server.clients, server.pollfds[i].fd, value, hostname, &(*it));
+            break;
+        case 3:
+            Cmds::cmdQuit(server.clients, server.pollfds[i].fd, value, server.channels, hostname);
+            break;
+        case 4:
+            Cmds::cmdKick(server.channels, server.clients,  value, hostname, &(*it));
+            break;
+        case 5:
+            Cmds::cmdInvite(server.channels, server.clients, server.pollfds[i].fd, value, hostname, &(*it));
+            break;
+        case 6:
+            Cmds::cmdTopic(server.channels, value, hostname, &(*it));
+            break;
+        case 7:
+            Cmds::cmdPrivmsg(server.clients, server.pollfds[i].fd, value, server.channels, hostname, &(*it));
+            break;
+        case 8:
+            Cmds::cmdPart(server.channels, server.clients, value, hostname, &(*it));
+            break;
+        case 9:
+            utils::reply(server.pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));
+            break;
+        case 10:
+            utils::reply(server.pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));
+            break;
+        case 11:
+            break;
+    default:
+        utils::reply(server.pollfds[i].fd, "421 * :Unknown command\r\n", it->getPrifex(hostname));
+        break;
+    }
+}
+
 
 std::string utils::getValue(std::string str, char c)
 {
@@ -186,4 +303,17 @@ void    utils::reply(int fd, std::string msg, std::string prefix)
 std::string     utils::get_ip(sockaddr_in user_addr)
 {
     return (inet_ntoa(user_addr.sin_addr));
+}
+
+int    utils::bufferChecker(std::string buffer, std::string &poper)
+{
+    size_t i = buffer.size();
+    if (i > 512) return (2);
+    i--;
+    poper.append(buffer);
+    if (i >= 1 && buffer[i] == '\n' && buffer[i - 1] == '\r')
+        return (1);
+    if (buffer[i] == '\n')
+        return (1);
+    return (0);
 }

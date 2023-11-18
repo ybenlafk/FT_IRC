@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CMDS
-# define CMDS
+#pragma once
+
 # include "headers.hpp"
 # include "defines.hpp"
 # include "utils.hpp"
@@ -39,4 +39,3 @@ Channel* check_channel(map_channel &channels, std::string channel, int fd, Clien
 Client* check_client_s(vec_client &clients, std::string user, int fd, Client *sender, std::string cmd, std::string hostname);
 int check_opratotPrivilege(Client *sender, Channel *channel);
 bool    isJoined(Client &client, std::string &name);
-#endif

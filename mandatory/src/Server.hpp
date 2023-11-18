@@ -9,16 +9,14 @@
 /*   Updated: 2023/10/19 16:35:17 by ybenlafk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#ifndef YY
-# define YY
+#pragma once
 
 # include "headers.hpp"
 #include "defines.hpp"
 # include "utils.hpp"
 # include "Cmds.hpp"
 # include "Channel.hpp"
-
+class utils;
 class Server
 {
     public:
@@ -37,5 +35,3 @@ class Server
         void        handleClients(int ServerSocket);
         int         AddClient(std::string pw, Client *client, int fd);
 };
-
-#endif

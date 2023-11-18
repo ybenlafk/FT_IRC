@@ -105,21 +105,7 @@ void Server::handleClients(int ServerSocket)
             if (this->pollfds[i].fd == ServerSocket)
             {
                 // Accept a client connection
-                std::cout << "\033[1;32m● Connecting...\033[0m" << std::endl;
-                sockaddr_in user_addr;
-                socklen_t user_len = sizeof(user_addr);
-                int clientSocket = accept(ServerSocket, (sockaddr *)&user_addr, &user_len);
-                if (clientSocket < 0)
-                    throw std::runtime_error("accept() failed");
-                if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
-                    throw std::runtime_error("fcntl() failed");
-                struct pollfd pollfdClient;
-                pollfdClient.fd = clientSocket;
-                pollfdClient.events = POLLIN;
-                pollfdClient.revents = 0;
-                this->pollfds.push_back(pollfdClient);
-                this->popers[clientSocket] = "";
-                this->addrs[clientSocket] = user_addr;
+                utils::AcceptConnection(ServerSocket, *this);
             }
             else
             {
@@ -142,96 +128,7 @@ void Server::handleClients(int ServerSocket)
                 fillBuffers(this->buffers, buffer);
                 if (bytesRead > 0)
                 {
-                    for (size_t v = 0; v < this->buffers.size(); v++)
-                    {
-                        int res = bufferChecker(buffers[v], this->popers[this->pollfds[i].fd]);
-                        std::cout << "buffer : " << buffers[v] << std::endl;
-                        if (res == 0)
-                            continue;
-                        else if (res == 2)
-                        {
-                            utils::ft_send(this->pollfds[i].fd, "417 * :Too long command\r\n");
-                            continue;
-                        }
-                        if (isExist(this->clients, this->pollfds[i].fd))
-                            clients.push_back(Client(this->pollfds[i].fd, "", "", "", false));
-                        vec_client::iterator it = clients.begin();
-                        for (; it != clients.end(); it++)
-                        {
-                            if (it->getFd() == this->pollfds[i].fd)
-                            {
-                                if (it->getAuth() == false)
-                                {
-                                    int res = AddClient(this->popers[this->pollfds[i].fd], &(*it), this->pollfds[i].fd);
-                                    if (res == 1)
-                                        utils::ft_send(this->pollfds[i].fd, "464 * :Password incorrect\r\n");
-                                    else if (res == 2)
-                                        utils::ft_send(this->pollfds[i].fd, "433 * :Nickname is already in use\r\n");
-                                    else if (res == 0 && it->getAuth() == true)
-                                    {
-                                        std::cout << "\033[1;32m● Client " << it->getNickName() <<" connected\033[0m" << std::endl;
-                                        it->setIpAddr(utils::get_ip(this->addrs[this->pollfds[i].fd]));
-                                        utils::reply(this->pollfds[i].fd, "001 " + it->getNickName()+ " :Welcome to Tchipa's IRC server 🤪\r\n", it->getPrifex(hostname));
-                                    }
-                                }
-                                else if (it->getAuth() == true)
-                                {
-                                    std::string cmds[12] = {"NICK" , "JOIN", "MODE" ,"QUIT" ,"KICK" , "INVITE", "TOPIC", "PRIVMSG", "PART", "PASS", "USER", "PONG"};
-                                    std::string cmd = utils::strTrim(this->popers[this->pollfds[i].fd], "\r\n\t ");
-                                    cmd = utils::getCmd(this->popers[this->pollfds[i].fd], ' ');
-                                    cmd = utils::strTrim(cmd, "\r\n\t ");
-                                    std::string value = utils::getValue(this->popers[this->pollfds[i].fd], ' ');
-                                    value = utils::strTrim(value, "\r\n\t ");
-                                    size_t l = 0;
-                                    for (; l < 12; l++)
-                                        if (cmd == cmds[l]) break;
-                                    switch (l)
-                                    {
-                                        case 0:
-                                            Cmds::cmdNick(clients, value, hostname, this->channels, &(*it));
-                                            break;
-                                        case 1:
-                                            Cmds::cmdJoin(this->channels, value, hostname, &(*it));
-                                            break;
-                                        case 2:
-                                            Cmds::cmdMode(this->channels, clients, this->pollfds[i].fd, value, hostname, &(*it));
-                                            break;
-                                        case 3:
-                                            Cmds::cmdQuit(clients, this->pollfds[i].fd, value, this->channels, hostname);
-                                            break;
-                                        case 4:
-                                            Cmds::cmdKick(this->channels, clients,  value, hostname, &(*it));
-                                            break;
-                                        case 5:
-                                            Cmds::cmdInvite(this->channels, clients, this->pollfds[i].fd, value, hostname, &(*it));
-                                            break;
-                                        case 6:
-                                            Cmds::cmdTopic(this->channels, value, hostname, &(*it));
-                                            break;
-                                        case 7:
-                                            Cmds::cmdPrivmsg(clients, this->pollfds[i].fd, value, this->channels, hostname, &(*it));
-                                            break;
-                                        case 8:
-                                            Cmds::cmdPart(this->channels, clients, value, hostname, &(*it));
-                                            break;
-                                        case 9:
-                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));
-                                            break;
-                                        case 10:
-                                            utils::reply(this->pollfds[i].fd, "462 * :You may not reregister\r\n", it->getPrifex(hostname));
-                                            break;
-                                        case 11:
-                                            break;
-                                    default:
-                                        utils::reply(this->pollfds[i].fd, "421 * :Unknown command\r\n", it->getPrifex(hostname));
-                                        break;
-                                    }
-                                }
-                                this->popers[this->pollfds[i].fd] = "";
-                                break;
-                            }
-                        }
-                    }
+                    utils::HandleReq(*this, i, hostname);
                     this->buffers.clear();
                 }
             }

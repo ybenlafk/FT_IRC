@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef OO
-# define OO
+#pragma once
 
 #include "headers.hpp"
 
@@ -60,5 +59,3 @@ class Client
         std::string      getPrifex(std::string hostname);
         std::string      getIp();
 };
-
-#endif

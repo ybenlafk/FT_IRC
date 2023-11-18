@@ -28,5 +28,4 @@ typedef std::vector<Client> vec_client;
 
 bool    isExist(vec_client clients, int fd);
 
-
 #endif

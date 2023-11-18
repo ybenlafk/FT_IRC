@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PP
-# define PP
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <map>
@@ -29,7 +29,3 @@
 #include <arpa/inet.h>
 #include <fstream>
 #include <fcntl.h>
-
-
-
-#endif
